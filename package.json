@@ -7,7 +7,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:bila-bulgaria": "tsx crawlers/bila-bulgaria/index.ts",
-    "dev:bila-bulgaria": "tsx watch crawlers/bila-bulgaria/index.ts"
+    "dev:bila-bulgaria": "tsx watch crawlers/bila-bulgaria/index.ts",
+    "start:lidl-bulgaria": "tsx crawlers/lidl-bulgaria/index.ts",
+    "dev:lidl-bulgaria": "tsx watch crawlers/lidl-bulgaria/index.ts"
   },
   "keywords": [
     "crawler",
