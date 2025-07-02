@@ -2,17 +2,25 @@
   "name": "prepcart-crawling",
   "type": "module",
   "version": "1.0.0",
-  "description": "",
+  "description": "Multi-store crawler system for prepcart",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsx index.ts"
+    "start:bila-bulgaria": "tsx crawlers/bila-bulgaria/index.ts",
+    "dev:bila-bulgaria": "tsx watch crawlers/bila-bulgaria/index.ts"
   },
-  "keywords": [],
+  "keywords": [
+    "crawler",
+    "prepcart",
+    "pdf",
+    "scraping"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/storage": "^7.16.0",
     "@mendable/firecrawl-js": "^1.29.1",
+    "cheerio": "^1.1.0",
     "firecrawl": "^1.29.0",
     "jsdom": "^26.1.0",
     "node-fetch": "^3.3.2"
