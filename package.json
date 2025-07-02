@@ -9,7 +9,11 @@
     "start:bila-bulgaria": "tsx crawlers/bila-bulgaria/index.ts",
     "dev:bila-bulgaria": "tsx watch crawlers/bila-bulgaria/index.ts",
     "start:lidl-bulgaria": "tsx crawlers/lidl-bulgaria/index.ts",
-    "dev:lidl-bulgaria": "tsx watch crawlers/lidl-bulgaria/index.ts"
+    "dev:lidl-bulgaria": "tsx watch crawlers/lidl-bulgaria/index.ts",
+    "start:fantastico-bulgaria": "tsx crawlers/fantastico-bulgaria/index.ts",
+    "dev:fantastico-bulgaria": "tsx watch crawlers/fantastico-bulgaria/index.ts",
+    "start:kaufland-bulgaria": "tsx crawlers/kaufland-bulgaria/index.ts",
+    "dev:kaufland-bulgaria": "tsx watch crawlers/kaufland-bulgaria/index.ts"
   },
   "keywords": [
     "crawler",
