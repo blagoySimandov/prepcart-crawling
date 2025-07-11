@@ -2,10 +2,10 @@
 # Usage: make <target> CRAWLER=<crawler-name>
 
 # Default values
-CRAWLER ?= bila-bulgaria
+CRAWLER ?= fantastico-bulgaria
 REGION ?= europe-west1
 PROJECT_ID ?= $(shell gcloud config get-value project 2>/dev/null)
-SCHEDULE ?= "0 9 * * 1" # Default: Weekly Monday 9 AM UTC
+SCHEDULE ?= 0 9 * * 1 # Default: Weekly Monday 9 AM UTC
 
 # Colors for output
 CYAN = \033[36m
@@ -16,27 +16,26 @@ NC = \033[0m # No Color
 
 .PHONY: help build run deploy deploy-all trigger logs list-crawlers clean
 
+help: ##@ Display this help message
+	@echo ""
+	@echo "Usage: make <target>"
+	@echo ""
+	@grep -E '(##@|##)' $(MAKEFILE_LIST) | grep -v grep | while read -r line; do \
+		if [[ $$line =~ ^##@ ]]; then \
+			echo ""; \
+			echo "$${line####@ }"; \
+		elif [[ $$line =~ ^[a-zA-Z_-]+: ]]; then \
+			target=$$(echo "$$line" | cut -d':' -f1); \
+			comment=$$(echo "$$line" | sed -n 's/.*## *//p'); \
+			if [ -n "$$comment" ]; then \
+				printf "    \033[32m%-20s\033[0m %s\n" "$$target" "$$comment"; \
+			fi \
+		fi \
+	done
 # Default target
-help: ## Show this help message
-	@echo "$(CYAN)Prepcart Crawling System$(NC)"
-	@echo ""
-	@echo "$(GREEN)Available targets:$(NC)"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(YELLOW)%-20s$(NC) %s\n", $$1, $$2}'
-	@echo ""
-	@echo "$(GREEN)Variables:$(NC)"
-	@echo "  $(YELLOW)CRAWLER$(NC)    = $(CRAWLER)"
-	@echo "  $(YELLOW)REGION$(NC)     = $(REGION)"
-	@echo "  $(YELLOW)PROJECT_ID$(NC) = $(PROJECT_ID)"
-	@echo "  $(YELLOW)SCHEDULE$(NC)   = $(SCHEDULE)"
-	@echo ""
-	@echo "$(GREEN)Examples:$(NC)"
-	@echo "  make build CRAWLER=bila-bulgaria"
-	@echo "  make deploy CRAWLER=bila-bulgaria SCHEDULE=\"0 6 * * *\""
-	@echo "  make run CRAWLER=bila-bulgaria"
-
 build: ## Build Docker image for specified crawler
 	@echo "$(CYAN)Building Docker image for crawler: $(CRAWLER)$(NC)"
-	docker build --build-arg CRAWLER_NAME=$(CRAWLER) -t gcr.io/$(PROJECT_ID)/prepcart-job-$(CRAWLER) .
+	docker build --build-arg CRAWLER_NAME=$(CRAWLER) -t $(REGION)-docker.pkg.dev/$(PROJECT_ID)/prepcart-crawling/$(CRAWLER) .
 
 run: ## Run crawler locally with Docker using Application Default Credentials
 	@echo "$(CYAN)Running crawler locally: $(CRAWLER)$(NC)"
@@ -54,7 +53,7 @@ check-auth: ## Check if authenticated with Google Cloud
 	fi
 
 deploy: ## Deploy specified crawler as a scheduled Cloud Run Job
-	@echo "$(CYAN)Deploying crawler job: $(CRAWLER) with schedule: [$(SCHEDULE)]$(NC)"
+	@echo "$(CYAN)Deploying crawler job: $(CRAWLER) with schedule: '$(SCHEDULE)'$(NC)"
 	@if [ -z "$(PROJECT_ID)" ]; then \
 		echo "$(RED)Error: PROJECT_ID not set. Please set it via: export PROJECT_ID=your-project-id$(NC)"; \
 		exit 1; \
@@ -62,12 +61,12 @@ deploy: ## Deploy specified crawler as a scheduled Cloud Run Job
 	./scripts/deploy-crawler.sh $(CRAWLER) "$(SCHEDULE)" $(REGION) $(PROJECT_ID)
 
 deploy-all: ## Deploy all crawlers with a default schedule
-	@echo "$(CYAN)Deploying all crawlers with schedule: [$(SCHEDULE)]$(NC)"
+	@echo "$(CYAN)Deploying all crawlers with schedule '$(SCHEDULE)'...$(NC)"
 	@if [ -z "$(PROJECT_ID)" ]; then \
 		echo "$(RED)Error: PROJECT_ID not set. Please set it via: export PROJECT_ID=your-project-id$(NC)"; \
 		exit 1; \
 	fi
-	./scripts/deploy-all-crawlers.sh "$(SCHEDULE)" $(REGION) $(PROJECT_ID)
+	./scripts/deploy-all-crawlers.sh "$(SCHEDULE)" "$(REGION)" "$(PROJECT_ID)"
 
 trigger: ## Trigger crawler job manually on Cloud Run
 	@echo "$(CYAN)Triggering job for crawler: $(CRAWLER)$(NC)"

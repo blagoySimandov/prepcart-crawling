@@ -38,7 +38,7 @@ if (!content) {
 
 if (await pdfExists(STORE_ID, COUNTRY, startDate, endDate, BASE_INDEX)) {
   console.log("PDF already exists");
-  process.exit(1);
+  process.exit(0);
 }
 
 const uploadResult = await storePdf(
