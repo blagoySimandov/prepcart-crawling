@@ -1,3 +1,5 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 import { BroshuraBgCrawler } from "../broshura-bg-crawler.js";
 
 const COUNTRY = "bulgaria";
@@ -10,7 +12,6 @@ async function main() {
   try {
     console.log("🏪 Starting Fantastico Bulgaria crawler...");
 
-    // Create crawler instance with configuration
     const crawler = new BroshuraBgCrawler({
       storeId: STORE_ID,
       country: COUNTRY,
@@ -19,7 +20,6 @@ async function main() {
       baseIndex: BASE_INDEX,
     });
 
-    // Use the new Firebase-enabled crawler with cloud storage
     const result = await crawler.crawlAndSaveWithCloudStorage();
 
     console.log(`🎉 Fantastico crawler completed successfully!`);

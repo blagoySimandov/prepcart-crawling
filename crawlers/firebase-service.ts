@@ -1,4 +1,4 @@
-import { initializeApp, getApps, cert } from "firebase-admin/app";
+import { initializeApp, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
 // Initialize Firebase Admin SDK
@@ -109,7 +109,7 @@ export class FirebaseBrochureService {
   async getBrochuresByStore(
     storeId: string,
     country: string,
-    limit: number = 50
+    limit: number = 50,
   ): Promise<BrochureRecord[]> {
     try {
       const snapshot = await db

@@ -4,6 +4,7 @@ import PDFDocument from "pdfkit";
 import * as fs from "fs";
 import * as path from "path";
 import { Writable } from "stream";
+import { HttpsProxyAgent } from "https-proxy-agent";
 import { firebaseBrochureService, BrochureRecord } from "./firebase-service.js";
 import { storePdf } from "./storage.js";
 
@@ -28,6 +29,17 @@ export interface BroshuraBgCrawlerConfig {
 export class BroshuraBgCrawler {
   private config: BroshuraBgCrawlerConfig;
   private startLink: string;
+  private readonly proxyAgent: HttpsProxyAgent<string>;
+  private readonly defaultHeaders = {
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    Accept:
+      "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Accept-Encoding": "gzip, deflate, br",
+    Connection: "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+  };
 
   constructor(config: BroshuraBgCrawlerConfig) {
     this.config = {
@@ -35,10 +47,13 @@ export class BroshuraBgCrawler {
       baseIndex: config.baseIndex || "0",
     };
     this.startLink = `https://www.broshura.bg/h/${config.storeSlug}`;
+
+    const proxyUrl = "http://wckkuhds:wrwzkpqoyr76@82.22.254.105:5965";
+    this.proxyAgent = new HttpsProxyAgent(proxyUrl);
+    console.log("🌐 Using proxy: 82.22.254.105:5965");
   }
 
   extractBrochureId(brochureUrl: string): string {
-    // Extract brochure ID from URL like: https://www.broshura.bg/b/5536511#page-1 or /b/5536511#page-1
     const match = brochureUrl.match(/\/b\/(\d+)/);
     if (!match) {
       throw new Error("Could not extract brochure ID from URL: " + brochureUrl);
@@ -48,11 +63,19 @@ export class BroshuraBgCrawler {
 
   async fetchMainPage(): Promise<BrochureInfo> {
     console.log("Fetching main page:", this.startLink);
-    const response = await fetch(this.startLink);
+    const response = await fetch(this.startLink, {
+      agent: this.proxyAgent as any,
+      headers: this.defaultHeaders,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const html = await response.text();
+
     const $ = cheerio.load(html);
 
-    // Extract valid-to date from ul.list-offer time with datetime attribute
     const dateTimeElement = $("ul.list-offer li time[datetime]");
     const dateTimeAttr = dateTimeElement.attr("datetime");
 
@@ -63,7 +86,6 @@ export class BroshuraBgCrawler {
     const validToDate = new Date(dateTimeAttr);
     console.log("Valid to date:", validToDate.toISOString());
 
-    // Extract brochure link from ul.list-offer > li > a
     const brochureLink = $("ul.list-offer > li > a").first().attr("href");
 
     if (!brochureLink) {
@@ -76,7 +98,6 @@ export class BroshuraBgCrawler {
 
     console.log("Brochure URL:", brochureUrl);
 
-    // Extract and update the base index with brochure ID
     const brochureId = this.extractBrochureId(brochureUrl);
     this.config.baseIndex = brochureId;
     console.log("Brochure ID (base index):", brochureId);
@@ -89,7 +110,15 @@ export class BroshuraBgCrawler {
 
   async extractImageBaseUrl(brochureUrl: string): Promise<string> {
     console.log("Fetching brochure page:", brochureUrl);
-    const response = await fetch(brochureUrl);
+    const response = await fetch(brochureUrl, {
+      agent: this.proxyAgent as any,
+      headers: this.defaultHeaders,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const html = await response.text();
     const $ = cheerio.load(html);
 
@@ -105,7 +134,6 @@ export class BroshuraBgCrawler {
   }
 
   extractImageId(imageUrl: string): string {
-    // Extract image ID from URL like: https://media.marktjagd.com/17339665_2018x2904.jpg
     const match = imageUrl.match(/\/(\d+)_/);
     if (!match) {
       throw new Error("Could not extract image ID from URL: " + imageUrl);
@@ -115,7 +143,14 @@ export class BroshuraBgCrawler {
 
   async fetchImageBuffer(url: string): Promise<Buffer | null> {
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        agent: this.proxyAgent as any,
+        headers: {
+          "User-Agent": this.defaultHeaders["User-Agent"],
+          Accept: "image/webp,image/apng,image/*,*/*;q=0.8",
+          Referer: "https://www.broshura.bg/",
+        },
+      });
       if (!response.ok) {
         return null;
       }
@@ -129,10 +164,9 @@ export class BroshuraBgCrawler {
   async fetchAllImages(baseImageUrl: string): Promise<ImageData[]> {
     const baseImageId = this.extractImageId(baseImageUrl);
 
-    // Use configurable suffix for image size
     const baseUrl = baseImageUrl.substring(
       0,
-      baseImageUrl.lastIndexOf("/") + 1
+      baseImageUrl.lastIndexOf("/") + 1,
     );
     const suffix = `_${this.config.imageSuffix}.jpg`;
 
@@ -144,7 +178,7 @@ export class BroshuraBgCrawler {
     const images: ImageData[] = [];
     let currentId = parseInt(baseImageId);
     let consecutiveErrors = 0;
-    const maxConsecutiveErrors = 3; // Stop after 3 consecutive errors
+    const maxConsecutiveErrors = 3;
 
     while (consecutiveErrors < maxConsecutiveErrors) {
       const imageUrl = `${baseUrl}${currentId}${suffix}`;
@@ -158,12 +192,12 @@ export class BroshuraBgCrawler {
           id: currentId.toString(),
           buffer,
         });
-        consecutiveErrors = 0; // Reset error counter on success
+        consecutiveErrors = 0;
         console.log(`Successfully fetched image ${currentId}`);
       } else {
         consecutiveErrors++;
         console.log(
-          `Failed to fetch image ${currentId} (${consecutiveErrors}/${maxConsecutiveErrors} consecutive errors)`
+          `Failed to fetch image ${currentId} (${consecutiveErrors}/${maxConsecutiveErrors} consecutive errors)`,
         );
       }
 
@@ -182,7 +216,7 @@ export class BroshuraBgCrawler {
       const buffers: Buffer[] = [];
 
       const stream = new Writable({
-        write(chunk, encoding, callback) {
+        write(chunk, _, callback) {
           buffers.push(chunk);
           callback();
         },
@@ -190,19 +224,17 @@ export class BroshuraBgCrawler {
 
       doc.pipe(stream);
 
-      // Add each image as a separate page
       for (let i = 0; i < images.length; i++) {
         const image = images[i];
         try {
           console.log(
-            `Adding page ${i + 1}/${images.length} (image ID: ${image.id})`
+            `Adding page ${i + 1}/${images.length} (image ID: ${image.id})`,
           );
 
           if (i > 0) {
             doc.addPage({ margin: 0 });
           }
 
-          // Add the image to fit the page
           doc.image(image.buffer, 0, 0, {
             fit: [doc.page.width, doc.page.height],
             align: "center",
@@ -211,7 +243,7 @@ export class BroshuraBgCrawler {
         } catch (error) {
           console.error(
             `Error adding image ${image.id} (page ${i + 1}) to PDF:`,
-            error
+            error,
           );
         }
       }
@@ -249,20 +281,19 @@ export class BroshuraBgCrawler {
    * Check if this brochure has already been crawled
    */
   async checkIfAlreadyCrawled(
-    brochureId: string
+    brochureId: string,
   ): Promise<BrochureRecord | null> {
-    const existingRecord = await firebaseBrochureService.getBrochureRecord(
-      brochureId
-    );
+    const existingRecord =
+      await firebaseBrochureService.getBrochureRecord(brochureId);
     if (existingRecord) {
       console.log(
-        `📚 Brochure ${brochureId} has already been crawled on ${existingRecord.crawledAt.toISOString()}`
+        `📚 Brochure ${brochureId} has already been crawled on ${existingRecord.crawledAt.toISOString()}`,
       );
       console.log(
-        `   Store: ${existingRecord.storeId}, Country: ${existingRecord.country}`
+        `   Store: ${existingRecord.storeId}, Country: ${existingRecord.country}`,
       );
       console.log(
-        `   Valid period: ${existingRecord.startDate.toDateString()} - ${existingRecord.endDate.toDateString()}`
+        `   Valid period: ${existingRecord.startDate.toDateString()} - ${existingRecord.endDate.toDateString()}`,
       );
       if (existingRecord.cloudStoragePath) {
         console.log(`   Stored at: ${existingRecord.cloudStoragePath}`);
@@ -280,7 +311,7 @@ export class BroshuraBgCrawler {
     endDate: Date,
     filename: string,
     imageCount: number,
-    cloudStoragePath?: string
+    cloudStoragePath?: string,
   ): Promise<void> {
     const record: BrochureRecord = {
       brochureId,
@@ -306,22 +337,20 @@ export class BroshuraBgCrawler {
   }> {
     try {
       console.log(
-        `🚀 Starting ${this.config.storeId} crawler with cloud storage...`
+        `🚀 Starting ${this.config.storeId} crawler with cloud storage...`,
       );
 
-      // Step 1: Fetch main page and extract brochure info
       const brochureInfo = await this.fetchMainPage();
       const brochureId = this.config.baseIndex!;
 
       console.log(
-        `📋 Checking if brochure ${brochureId} has already been crawled...`
+        `📋 Checking if brochure ${brochureId} has already been crawled...`,
       );
 
-      // Step 2: Check if this brochure has already been crawled
       const existingRecord = await this.checkIfAlreadyCrawled(brochureId);
       if (existingRecord) {
         console.log(
-          `⚠️ Skipping crawling - brochure ${brochureId} already processed`
+          `⚠️ Skipping crawling - brochure ${brochureId} already processed`,
         );
         return {
           filename: existingRecord.filename || "",
@@ -330,12 +359,12 @@ export class BroshuraBgCrawler {
       }
 
       console.log(
-        `✅ Brochure ${brochureId} not found in database. Proceeding with crawling...`
+        `✅ Brochure ${brochureId} not found in database. Proceeding with crawling...`,
       );
 
       // Step 3-7: Same as crawlAndSaveLocally but get PDF content as buffer
       const baseImageUrl = await this.extractImageBaseUrl(
-        brochureInfo.brochureUrl
+        brochureInfo.brochureUrl,
       );
       const images = await this.fetchAllImages(baseImageUrl);
 
@@ -371,7 +400,7 @@ export class BroshuraBgCrawler {
         startDate,
         endDate,
         pdfContent.toString("base64"),
-        brochureId
+        brochureId,
       );
       console.log(`☁️ PDF uploaded to: ${cloudPath}`);
 
@@ -383,7 +412,7 @@ export class BroshuraBgCrawler {
         endDate,
         filename,
         images.length,
-        cloudPath
+        cloudPath,
       );
 
       console.log(`✅ ${this.config.storeId} crawler completed successfully!`);
@@ -403,39 +432,39 @@ export class BroshuraBgCrawler {
       const brochureId = this.config.baseIndex!; // This gets set in fetchMainPage()
 
       console.log(
-        `📋 Checking if brochure ${brochureId} has already been crawled...`
+        `📋 Checking if brochure ${brochureId} has already been crawled...`,
       );
 
       // Step 2: Check if this brochure has already been crawled
       const existingRecord = await this.checkIfAlreadyCrawled(brochureId);
       if (existingRecord) {
         console.log(
-          `⚠️ Skipping crawling - brochure ${brochureId} already processed`
+          `⚠️ Skipping crawling - brochure ${brochureId} already processed`,
         );
 
         // If local file doesn't exist but we have a record, we could optionally download from cloud storage
         const localFilename = this.generateFilename(
           existingRecord.startDate,
-          existingRecord.endDate
+          existingRecord.endDate,
         );
         if (fs.existsSync(localFilename)) {
           console.log(`📄 Local file exists: ${localFilename}`);
           return localFilename;
         } else {
           console.log(
-            `📄 Local file doesn't exist, but brochure was already crawled. You may want to download from cloud storage.`
+            `📄 Local file doesn't exist, but brochure was already crawled. You may want to download from cloud storage.`,
           );
           return localFilename; // Return the expected filename even if it doesn't exist locally
         }
       }
 
       console.log(
-        `✅ Brochure ${brochureId} not found in database. Proceeding with crawling...`
+        `✅ Brochure ${brochureId} not found in database. Proceeding with crawling...`,
       );
 
       // Step 3: Extract base image URL from brochure page
       const baseImageUrl = await this.extractImageBaseUrl(
-        brochureInfo.brochureUrl
+        brochureInfo.brochureUrl,
       );
 
       // Step 4: Fetch all images
@@ -469,7 +498,7 @@ export class BroshuraBgCrawler {
           startDate,
           endDate,
           filename,
-          images.length
+          images.length,
         );
         return filename;
       }
@@ -489,7 +518,7 @@ export class BroshuraBgCrawler {
         startDate,
         endDate,
         filename,
-        images.length
+        images.length,
       );
 
       console.log(`✅ ${this.config.storeId} crawler completed successfully!`);

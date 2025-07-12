@@ -1,3 +1,5 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 import { BroshuraBgCrawler } from "../broshura-bg-crawler.js";
 
 const COUNTRY = "bulgaria";
@@ -18,7 +20,6 @@ async function main() {
       baseIndex: BASE_INDEX,
     });
 
-    // Use the new Firebase-enabled crawler with cloud storage
     const result = await crawler.crawlAndSaveWithCloudStorage();
 
     console.log(`🎉 T-Market crawler completed successfully!`);
