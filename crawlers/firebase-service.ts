@@ -84,17 +84,19 @@ export class FirebaseBrochureService {
    */
   async storeBrochureRecord(record: BrochureRecord): Promise<void> {
     try {
-      await db.collection(this.collection).add({
+      const data: Required<BrochureRecord> = {
         brochureId: record.brochureId,
         storeId: record.storeId,
         country: record.country,
         crawledAt: record.crawledAt,
         startDate: record.startDate,
         endDate: record.endDate,
-        filename: record.filename,
-        cloudStoragePath: record.cloudStoragePath,
-        imageCount: record.imageCount,
-      });
+        filename: record.filename || "",
+        cloudStoragePath: record.cloudStoragePath || "",
+        imageCount: record.imageCount || 0,
+      };
+
+      await db.collection(this.collection).add(data);
 
       console.log(`✅ Brochure record stored for ID: ${record.brochureId}`);
     } catch (error) {
@@ -109,7 +111,7 @@ export class FirebaseBrochureService {
   async getBrochuresByStore(
     storeId: string,
     country: string,
-    limit: number = 50,
+    limit: number = 50
   ): Promise<BrochureRecord[]> {
     try {
       const snapshot = await db

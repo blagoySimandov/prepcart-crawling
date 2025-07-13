@@ -1,4 +1,8 @@
 import { pdfExists, storePdf } from "../storage.js";
+import {
+  firebaseBrochureService,
+  BrochureRecord,
+} from "../firebase-service.js";
 import fetch from "node-fetch";
 import * as cheerio from "cheerio";
 import PDFDocument from "pdfkit";
@@ -81,6 +85,59 @@ async function createPdfFromImages(imageUrls: string[]): Promise<Buffer> {
   });
 }
 
+/**
+ * Check if this brochure has already been crawled
+ */
+async function checkIfAlreadyCrawled(
+  brochureId: string
+): Promise<BrochureRecord | null> {
+  const existingRecord = await firebaseBrochureService.getBrochureRecord(
+    brochureId
+  );
+  if (existingRecord) {
+    console.log(
+      `📚 Brochure ${brochureId} has already been crawled on ${existingRecord.crawledAt.toISOString()}`
+    );
+    console.log(
+      `   Store: ${existingRecord.storeId}, Country: ${existingRecord.country}`
+    );
+    console.log(
+      `   Valid period: ${existingRecord.startDate.toDateString()} - ${existingRecord.endDate.toDateString()}`
+    );
+    if (existingRecord.cloudStoragePath) {
+      console.log(`   Stored at: ${existingRecord.cloudStoragePath}`);
+    }
+  }
+  return existingRecord;
+}
+
+/**
+ * Store brochure information in Firebase after successful crawling
+ */
+async function storeBrochureInfo(
+  brochureId: string,
+  startDate: Date,
+  endDate: Date,
+  cloudStoragePath: string,
+  imageCount: number
+): Promise<void> {
+  const record: BrochureRecord = {
+    brochureId,
+    storeId: STORE_ID,
+    country: COUNTRY,
+    crawledAt: new Date(),
+    startDate,
+    endDate,
+    cloudStoragePath,
+    imageCount,
+  };
+
+  await firebaseBrochureService.storeBrochureRecord(record);
+  console.log(
+    `💾 Brochure information stored in Firebase for ID: ${brochureId}`
+  );
+}
+
 async function main() {
   console.log(`Fetching main brochure page from: ${START_LINK}`);
   const mainResponse = await fetch(START_LINK);
@@ -119,6 +176,17 @@ async function main() {
     `  - Valid from: ${startDate.toISOString().split("T")[0]} to ${
       endDate.toISOString().split("T")[0]
     }`
+  );
+
+  console.log(`📋 Checking if brochure ${id} has already been crawled...`);
+  const existingRecord = await checkIfAlreadyCrawled(id);
+  if (existingRecord) {
+    console.log(`⚠️ Skipping crawling - brochure ${id} already processed`);
+    return;
+  }
+
+  console.log(
+    `✅ Brochure ${id} not found in database. Proceeding with crawling...`
   );
 
   if (await pdfExists(STORE_ID, COUNTRY, startDate, endDate, id)) {
@@ -164,6 +232,15 @@ async function main() {
       id
     );
     console.log(`  - Upload completed: ${uploadResult}`);
+
+    // Store brochure information in Firebase
+    await storeBrochureInfo(
+      id,
+      startDate,
+      endDate,
+      uploadResult,
+      imageUrls.length
+    );
   } catch (error) {
     console.error(`  - Failed to upload PDF for ID ${id}.`, error);
   }
