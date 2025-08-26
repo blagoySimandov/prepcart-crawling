@@ -1,5 +1,4 @@
 import fetch from "node-fetch";
-import * as cheerio from "cheerio";
 import PDFDocument from "pdfkit";
 import * as fs from "fs";
 import * as path from "path";
@@ -9,38 +8,28 @@ import {
   firebaseBrochureService,
   BrochureRecord,
 } from "../firebase-service.js";
-import { storePdf } from "../storage.js";
 import {
   WebshareProxyService,
   WebshareProxy,
 } from "../webshare-proxy-service.js";
 import { SecretsManager } from "../secrets-manager.js";
-import { BrochureStore, BROCHURE_HREF_PREFIXES } from "./constants.js";
+import {
+  BrochureStore,
+  BROCHURE_HREF_PREFIXES,
+  City,
+  CITY_START_LINK_PREFIX,
+} from "./constants.js";
+import { KataloziCrawlerConfig, ImageData } from "./types.js";
+import { Storage } from "@google-cloud/storage";
+import { BUCKET_NAME } from "../constants.js";
 
-export enum City {
-  Sofia = "София",
-  Plovdiv = "Пловдив",
-  Varna = "Варна",
-  Burgas = "Бургас",
-  Ruse = "Русе",
-  StaraZagora = "Стара%20Загора",
-  Razgrad = "Разград",
-}
-const CITY_START_LINK_PREFIX = "https://katalozi-bg.info/city/";
-
-export interface ImageData {
-  id: string;
-  buffer: Buffer;
-}
-
-export interface KataloziCrawlerConfig {
-  storeId: string;
-  country: string;
-  projectId?: string;
-}
+const STOREID_TO_COUNTRY: Record<string, string> = {
+  kaufland: "bulgaria",
+  lidl: "bulgaria",
+  billa: "bulgaria",
+};
 
 export class KataloziCrawler {
-  startUrl: string;
   protected config: KataloziCrawlerConfig;
   private proxyAgent?: HttpsProxyAgent<string>;
   private webshareService?: WebshareProxyService;
@@ -56,10 +45,9 @@ export class KataloziCrawler {
     Connection: "keep-alive",
     "Upgrade-Insecure-Requests": "1",
   };
-  private defaultFetchOptions: any;
+  private defaultFetchOptions: any; //TODO: don't type it to any
 
-  constructor(startUrl: string, config: KataloziCrawlerConfig) {
-    this.startUrl = startUrl;
+  constructor(config: KataloziCrawlerConfig) {
     this.config = config;
     this.secretsManager = new SecretsManager(config.projectId);
     this.defaultFetchOptions = {
@@ -68,22 +56,136 @@ export class KataloziCrawler {
     };
   }
 
-  async startWithCity(city: City, store: BrochureStore) {
-    await this.initializeWebshareProxy();
-    const response = await this.visitStartUrlForCity(city);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+  async startWithCity(
+    city: City,
+    store: BrochureStore,
+    storeInCloud: boolean = false,
+  ): Promise<void> {
+    try {
+      console.log(`🏙️ Starting crawler for city: ${city}, store: ${store}`);
+
+      await this.initializeWebshareProxy();
+
+      const response = await this.visitStartUrlForCity(city);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const html = await response.text();
+      const brochureIds = this.extractBrochureIds(html, store);
+
+      if (brochureIds.length === 0) {
+        console.log(`❌ No brochure IDs found for ${store} in ${city}`);
+        return;
+      }
+
+      console.log(
+        `📋 Found ${brochureIds.length} brochure IDs for ${store}:`,
+        brochureIds,
+      );
+
+      for (const brochureId of brochureIds) {
+        try {
+          console.log(`\n📖 Processing brochure ${brochureId}...`);
+
+          if (await this.checkIfCrawled(brochureId)) {
+            console.log(`⚠️ Skipping brochure ${brochureId} - already crawled`);
+            continue;
+          }
+
+          const pdfBuffer = await this.generatePdfFromBrochureId(brochureId);
+
+          let storagePath: string;
+          let filename: string;
+
+          if (storeInCloud) {
+            const cloudPath = await this.storeInCloud(pdfBuffer, brochureId);
+            filename = await this.storeLocally(pdfBuffer, brochureId);
+            storagePath = cloudPath;
+          } else {
+            filename = await this.storeLocally(pdfBuffer, brochureId);
+            storagePath = filename;
+          }
+
+          const record: BrochureRecord = {
+            brochureId,
+            storeId: this.config.storeId,
+            country: STOREID_TO_COUNTRY[this.config.storeId],
+            crawledAt: new Date(),
+            startDate: new Date(),
+            endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            filename,
+            cloudStoragePath: storeInCloud ? storagePath : undefined,
+          };
+
+          await firebaseBrochureService.storeBrochureRecord(record);
+          console.log(`✅ Brochure ${brochureId} processed successfully`);
+        } catch (error) {
+          console.error(`❌ Error processing brochure ${brochureId}:`, error);
+          // Continue with next brochure instead of stopping
+        }
+      }
+
+      console.log(
+        `\n🎉 Completed processing ${brochureIds.length} brochures for ${store} in ${city}`,
+      );
+    } catch (error) {
+      console.error(`❌ Error in startWithCity for ${city}, ${store}:`, error);
+      throw error;
     }
-    const html = await response.text();
-    const brochureIds = this.extractBrochureIds(html, store);
-    console.log("brochureIds", brochureIds);
+  }
+
+  /**
+   * Generates a PDF from a brochure ID by fetching landscape images
+   * @param brochureId - The brochure ID to fetch images for
+   * @returns Buffer containing the generated PDF
+   */
+  async generatePdfFromBrochureId(brochureId: string): Promise<Buffer> {
+    console.log(`📸 Fetching images for brochure ${brochureId}...`);
+
+    const images: ImageData[] = [];
+    let pageNumber = 1;
+    let consecutiveErrors = 0;
+    const maxConsecutiveErrors = 3;
+
+    while (consecutiveErrors < maxConsecutiveErrors) {
+      const imageUrl = `https://katalozi-bg.info/catalogs/${brochureId}/landscape/${pageNumber}.jpg`;
+      console.log(`🔍 Fetching page ${pageNumber}: ${imageUrl}`);
+
+      const buffer = await this.fetchImageBuffer(imageUrl);
+
+      if (buffer) {
+        images.push({
+          id: pageNumber.toString(),
+          buffer,
+        });
+        consecutiveErrors = 0;
+        console.log(`✅ Successfully fetched page ${pageNumber}`);
+      } else {
+        consecutiveErrors++;
+        console.log(
+          `❌ Failed to fetch page ${pageNumber} (${consecutiveErrors}/${maxConsecutiveErrors} consecutive errors)`,
+        );
+      }
+
+      pageNumber++;
+    }
+
+    if (images.length === 0) {
+      throw new Error(`No images found for brochure ${brochureId}`);
+    }
+
+    console.log(`📚 Found ${images.length} pages for brochure ${brochureId}`);
+    return await this.createPdfFromImages(images);
   }
 
   async visitStartUrlForCity(city: City) {
     const cityStartUrl = CITY_START_LINK_PREFIX + city;
-    console.info(`Visiting ${cityStartUrl}`);
+    console.info(`🌐 Visiting ${cityStartUrl}`);
+
     return fetch(cityStartUrl, this.defaultFetchOptions);
   }
+
   /**
    * Extracts all brochure IDs from HTML for a specific store
    * @param html - The HTML content to search
@@ -99,7 +201,7 @@ export class KataloziCrawler {
     const escapedPrefix = hrefPrefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const hrefPattern = new RegExp(`href="${escapedPrefix}(\\d+)"`, "gi");
 
-    const matches = [...html.matchAll(hrefPattern)];
+    const matches = Array.from(html.matchAll(hrefPattern));
     return matches.map((match) => match[1]);
   }
 
@@ -151,100 +253,6 @@ export class KataloziCrawler {
     }
   }
 
-  async startWithStore(storeInCloud: boolean = true) {
-    try {
-      console.log("🚀 Starting Katalozi crawler...");
-
-      await this.initializeWebshareProxy();
-
-      const brochureLinks = await this.getBrochureLinks();
-
-      if (brochureLinks.length === 0) {
-        console.log("❌ No brochure links found");
-        return;
-      }
-
-      console.log(`Found ${brochureLinks.length} brochure links to process`);
-
-      for (const link of brochureLinks) {
-        try {
-          const brochureId = this.extractBrochureId(link);
-          console.log(`\n📋 Processing brochure ${brochureId} from ${link}`);
-
-          // Check if already crawled
-          if (await this.checkIfCrawled(brochureId)) {
-            console.log(`⚠️ Skipping brochure ${brochureId} - already crawled`);
-            continue;
-          }
-
-          // Extract brochure (download images and create PDF)
-          console.log(`🔄 Extracting brochure ${brochureId}...`);
-          const pdfBuffer = await this.extractBrochureFromLink(link);
-
-          // Create dates (start date is current date, end date is estimated)
-          const startDate = new Date();
-          const endDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // Default 7 days
-
-          let storagePath: string;
-          let filename: string;
-
-          if (storeInCloud) {
-            // Store in cloud
-            const cloudPath = await this.storeInCloud(
-              pdfBuffer,
-              brochureId,
-              startDate,
-              endDate,
-            );
-            // Also store locally with proper naming
-            filename = await this.storeLocally(
-              pdfBuffer,
-              brochureId,
-              startDate,
-              endDate,
-            );
-            storagePath = cloudPath;
-          } else {
-            // Store only locally
-            filename = await this.storeLocally(
-              pdfBuffer,
-              brochureId,
-              startDate,
-              endDate,
-            );
-            storagePath = filename;
-          }
-
-          // Store brochure info in Firebase
-          const record: BrochureRecord = {
-            brochureId,
-            storeId: this.config.storeId,
-            country: this.config.country,
-            crawledAt: new Date(),
-            startDate,
-            endDate,
-            filename,
-            imageCount: 0, // We don't track individual image count for katalozi
-            cloudStoragePath: storeInCloud ? storagePath : undefined,
-          };
-
-          await firebaseBrochureService.storeBrochureRecord(record);
-          console.log(
-            `✅ Brochure ${brochureId} stored successfully at: ${storagePath}`,
-          );
-        } catch (error) {
-          console.error(`❌ Error processing brochure ${link}:`, error);
-          // Continue with next brochure instead of stopping
-        }
-      }
-
-      console.log("\n🎉 Katalozi crawler completed!");
-    } catch (error) {
-      console.error("❌ Error in Katalozi crawler:", error);
-      throw error;
-    }
-  }
-
   async checkIfCrawled(brochureId: string): Promise<boolean> {
     const existingRecord =
       await firebaseBrochureService.getBrochureRecord(brochureId);
@@ -266,91 +274,6 @@ export class KataloziCrawler {
     return false;
   }
 
-  async getBrochureLinks(): Promise<string[]> {
-    console.log("Fetching main page:", this.startUrl);
-    if (!this.proxyAgent) {
-      throw new Error(
-        "Proxy agent not initialized. Call initializeWebshareProxy() first.",
-      );
-    }
-
-    const response = await fetch(this.startUrl, {
-      agent: this.proxyAgent as any,
-      headers: this.defaultHeaders,
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const html = await response.text();
-    const $ = cheerio.load(html);
-
-    const brochureLinks: string[] = [];
-    const selector = "div#app2 div.row div.col-12.col-md-3 div.row a";
-
-    $(selector).each((_, element) => {
-      const href = $(element).attr("href");
-      if (href) {
-        const fullUrl = href.startsWith("http")
-          ? href
-          : `https://katalozi-bg.info${href}`;
-        brochureLinks.push(fullUrl);
-      }
-    });
-
-    console.log(`Found ${brochureLinks.length} brochure links`);
-    return brochureLinks;
-  }
-
-  async extractBrochureFromLink(link: string): Promise<Buffer> {
-    const brochureId = this.extractBrochureId(link);
-    console.log(`Extracting brochure ID: ${brochureId} from link: ${link}`);
-
-    const images: ImageData[] = [];
-    let pageNumber = 1;
-    let consecutiveErrors = 0;
-    const maxConsecutiveErrors = 3;
-
-    while (consecutiveErrors < maxConsecutiveErrors) {
-      const imageUrl = `https://katalozi-bg.info/catalogs/${brochureId}/landscape/${pageNumber}.jpg`;
-      console.log(`Fetching image page ${pageNumber}: ${imageUrl}`);
-
-      const buffer = await this.fetchImageBuffer(imageUrl);
-
-      if (buffer) {
-        images.push({
-          id: pageNumber.toString(),
-          buffer,
-        });
-        consecutiveErrors = 0;
-        console.log(`Successfully fetched image page ${pageNumber}`);
-      } else {
-        consecutiveErrors++;
-        console.log(
-          `Failed to fetch image page ${pageNumber} (${consecutiveErrors}/${maxConsecutiveErrors} consecutive errors)`,
-        );
-      }
-
-      pageNumber++;
-    }
-
-    if (images.length === 0) {
-      throw new Error("No images found for brochure");
-    }
-
-    console.log(`Found ${images.length} pages for brochure ${brochureId}`);
-    return await this.createPdfFromImages(images);
-  }
-
-  extractBrochureId(brochureUrl: string): string {
-    const match = brochureUrl.match(/\/(\d+)$/);
-    if (!match) {
-      throw new Error("Could not extract brochure ID from URL: " + brochureUrl);
-    }
-    return match[1];
-  }
-
   async fetchImageBuffer(url: string): Promise<Buffer | null> {
     try {
       if (!this.proxyAgent) {
@@ -367,18 +290,45 @@ export class KataloziCrawler {
           Referer: "https://katalozi-bg.info/",
         },
       });
+
       if (!response.ok) {
         return null;
       }
+
+      // Check if we got redirected (indicates image doesn't exist)
+      if (response.url.includes("/city/")) {
+        console.log(
+          `🔄 Got redirected to ${response.url} - image doesn't exist`,
+        );
+        return null;
+      }
+
+      // Check content type to ensure it's actually an image
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.startsWith("image/")) {
+        console.log(`❌ Invalid content type: ${contentType} - expected image`);
+        return null;
+      }
+
       const arrayBuffer = await response.arrayBuffer();
-      return Buffer.from(arrayBuffer);
+      const buffer = Buffer.from(arrayBuffer);
+
+      if (buffer.length < 100) {
+        console.log(
+          `❌ Buffer too small (${buffer.length} bytes) - likely not an image`,
+        );
+        return null;
+      }
+
+      return buffer;
     } catch (error) {
+      console.log(`❌ Error fetching image: ${error}`);
       return null;
     }
   }
 
   async createPdfFromImages(images: ImageData[]): Promise<Buffer> {
-    console.log(`Creating PDF from ${images.length} images...`);
+    console.log(`📄 Creating PDF from ${images.length} images...`);
 
     return new Promise((resolve, reject) => {
       const doc = new PDFDocument({ autoFirstPage: true, margin: 0 });
@@ -397,7 +347,7 @@ export class KataloziCrawler {
         const image = images[i];
         try {
           console.log(
-            `Adding page ${i + 1}/${images.length} (image ID: ${image.id})`,
+            `📋 Adding page ${i + 1}/${images.length} (image ID: ${image.id})`,
           );
 
           if (i > 0) {
@@ -411,68 +361,79 @@ export class KataloziCrawler {
           });
         } catch (error) {
           console.error(
-            `Error adding image ${image.id} (page ${i + 1}) to PDF:`,
+            `❌ Error adding image ${image.id} (page ${i + 1}) to PDF:`,
             error,
           );
         }
       }
 
-      console.log("Finalizing PDF...");
+      console.log("🔧 Finalizing PDF...");
       doc.end();
 
       stream.on("finish", () => {
-        console.log(`PDF created successfully with ${images.length} pages`);
+        console.log(`✅ PDF created successfully with ${images.length} pages`);
         resolve(Buffer.concat(buffers));
       });
 
       stream.on("error", (err) => {
-        console.error("PDF creation error:", err);
+        console.error("❌ PDF creation error:", err);
         reject(err);
       });
     });
   }
 
-  generateFilename(startDate: Date, endDate: Date, brochureId: string): string {
-    return `brochures/${this.config.storeId}_${this.config.country}_${brochureId}.pdf`;
+  generateFilename(brochureId: string): string {
+    return `brochures/${this.config.storeId}_${brochureId}.pdf`;
   }
 
-  async storeLocally(
-    pdfBuffer: Buffer,
-    brochureId: string,
-    startDate: Date,
-    endDate: Date,
-  ): Promise<string> {
-    const filename = this.generateFilename(startDate, endDate, brochureId);
+  async storeLocally(pdfBuffer: Buffer, brochureId: string): Promise<string> {
+    const filename = this.generateFilename(brochureId);
 
-    // Create brochures directory if it doesn't exist
     const brochuresDir = path.dirname(filename);
     if (!fs.existsSync(brochuresDir)) {
       fs.mkdirSync(brochuresDir, { recursive: true });
     }
 
     fs.writeFileSync(filename, pdfBuffer);
-    console.log(`📄 PDF saved locally: ${filename}`);
+    console.log(`💾 PDF saved locally: ${filename}`);
     return filename;
   }
 
-  async storeInCloud(
-    pdfBuffer: Buffer,
-    brochureId: string,
-    startDate: Date,
-    endDate: Date,
-  ): Promise<string> {
+  async storeInCloud(pdfBuffer: Buffer, brochureId: string): Promise<string> {
     console.log(`☁️ Uploading brochure ${brochureId} to cloud storage...`);
 
-    const cloudPath = await storePdf(
-      this.config.storeId,
-      this.config.country,
-      startDate,
-      endDate,
-      pdfBuffer.toString("base64"),
-      brochureId,
-    );
+    const filename = `${this.config.storeId}_${brochureId}.pdf`;
+    const cloudPath = await this.storeInGoogleCloud(pdfBuffer, filename);
 
     console.log(`☁️ PDF uploaded to: ${cloudPath}`);
     return cloudPath;
+  }
+
+  private async storeInGoogleCloud(
+    pdfBuffer: Buffer,
+    filename: string,
+  ): Promise<string> {
+    const storage = new Storage();
+    const fullPath = `brochures/${filename}`;
+    const bucket = storage.bucket(BUCKET_NAME);
+    const file = bucket.file(fullPath);
+
+    try {
+      await file.save(pdfBuffer, {
+        metadata: {
+          contentType: "application/pdf",
+          contentEncoding: null,
+          cacheControl: "public, max-age=31536000",
+        },
+        resumable: true,
+        validation: "crc32c",
+        gzip: false,
+      });
+
+      return `gs://${BUCKET_NAME}/${fullPath}`;
+    } catch (error) {
+      console.error("Error uploading PDF:", error);
+      throw error;
+    }
   }
 }
