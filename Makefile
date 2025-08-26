@@ -2,7 +2,7 @@
 # Usage: make <target> CRAWLER=<crawler-name>
 
 # Default values
-CRAWLER ?= fantastico-bulgaria
+CRAWLER ?= kaufland
 REGION ?= europe-west1
 PROJECT_ID ?= $(shell gcloud config get-value project 2>/dev/null)
 SCHEDULE ?= 0 9 * * 1 # Default: Weekly Monday 9 AM UTC
@@ -87,8 +87,8 @@ status: ## Show status of a deployed crawler job
 	@gcloud scheduler jobs describe prepcart-schedule-$(CRAWLER) --location=$(REGION) --format="table(name,schedule,state)" 2>/dev/null || echo "$(RED)Scheduler not found$(NC)"
 
 list-crawlers: ## List all available crawler directories
-	@echo "$(CYAN)Available crawlers:$(NC)"
-	@find crawlers -maxdepth 1 -type d -not -path crawlers | sed 's|crawlers/|  - |' | sort
+	@echo "$(CYAN)Available katalozi subcrawlers:$(NC)"
+	@find crawlers/katalozi/crawlers -maxdepth 1 -type d -not -path crawlers/katalozi/crawlers | sed 's|crawlers/katalozi/crawlers/|  - |' | sort
 
 list-deployed: ## List all deployed crawler jobs and schedulers
 	@echo "$(CYAN)Deployed crawler jobs:$(NC)"
@@ -109,8 +109,8 @@ clean: ## Clean up local Docker images for crawlers
 	docker images | grep prepcart-job | awk '{print $$3}' | xargs -r docker rmi -f
 
 dev: ## Run crawler in development mode locally (with tsx watch)
-	@echo "$(CYAN)Running crawler in development mode: $(CRAWLER)$(NC)"
-	npm run dev:$(CRAWLER)
+	@echo "$(CYAN)Running katalozi subcrawler in development mode: $(CRAWLER)$(NC)"
+	npm run dev:subcrawler --crawler=$(CRAWLER)
 
 info: ## Show current configuration and available crawlers
 	@echo "$(CYAN)Current Configuration:$(NC)"

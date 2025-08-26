@@ -14,11 +14,11 @@ echo "⏰ Default Schedule: ${SCHEDULE}"
 echo "📍 Region: ${REGION}"
 echo "🏗️  Project: ${PROJECT_ID}"
 
-# Find all crawler directories
-CRAWLERS=$(find crawlers -maxdepth 1 -type d -not -path crawlers | sed 's|crawlers/||')
+# Find all katalozi subcrawler directories
+CRAWLERS=$(find crawlers/katalozi/crawlers -maxdepth 1 -type d -not -path crawlers/katalozi/crawlers | sed 's|crawlers/katalozi/crawlers/||')
 
 if [ -z "$CRAWLERS" ]; then
-    echo "❌ No crawler directories found in ./crawlers/"
+    echo "❌ No subcrawler directories found in ./crawlers/katalozi/crawlers/"
     exit 1
 fi
 

@@ -20,5 +20,16 @@ export class KauflandKataloziCrawler extends KataloziCrawler {
   }
 }
 
-const crawler = new KauflandKataloziCrawler();
-crawler.startWithCity(City.Sofia, BrochureStore.KAUFLAND);
+async function main() {
+  try {
+    const crawler = new KauflandKataloziCrawler();
+    await crawler.startWithCity(City.Sofia, BrochureStore.KAUFLAND);
+    console.log('✅ Crawler finished successfully');
+    process.exit(0);
+  } catch (error) {
+    console.error('❌ Crawler failed:', error);
+    process.exit(1);
+  }
+}
+
+main();

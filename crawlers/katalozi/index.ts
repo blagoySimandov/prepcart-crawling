@@ -59,10 +59,13 @@ export class KataloziCrawler {
   async startWithCity(
     city: City,
     store: BrochureStore,
-    storeInCloud: boolean = false,
+    storeInCloud?: boolean,
   ): Promise<void> {
     try {
+      // Auto-detect environment if not explicitly set
+      const shouldStoreInCloud = storeInCloud ?? (process.env.NODE_ENV === 'production');
       console.log(`🏙️ Starting crawler for city: ${city}, store: ${store}`);
+      console.log(`📁 Storage mode: ${shouldStoreInCloud ? 'Cloud' : 'Local'} (NODE_ENV: ${process.env.NODE_ENV || 'development'})`);
 
       await this.initializeWebshareProxy();
 
@@ -98,11 +101,13 @@ export class KataloziCrawler {
           let storagePath: string;
           let filename: string;
 
-          if (storeInCloud) {
+          if (shouldStoreInCloud) {
+            console.log(`☁️ Storing brochure ${brochureId} in cloud (production mode)`);
             const cloudPath = await this.storeInCloud(pdfBuffer, brochureId);
             filename = await this.storeLocally(pdfBuffer, brochureId);
             storagePath = cloudPath;
           } else {
+            console.log(`💾 Storing brochure ${brochureId} locally (development mode)`);
             filename = await this.storeLocally(pdfBuffer, brochureId);
             storagePath = filename;
           }
@@ -115,7 +120,7 @@ export class KataloziCrawler {
             startDate: new Date(),
             endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
             filename,
-            cloudStoragePath: storeInCloud ? storagePath : undefined,
+            cloudStoragePath: shouldStoreInCloud ? storagePath : undefined,
           };
 
           await firebaseBrochureService.storeBrochureRecord(record);
