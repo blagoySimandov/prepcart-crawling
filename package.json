@@ -18,7 +18,9 @@
     "dev:cba-bulgaria": "tsx watch crawlers/cba-bulgaria/index.ts",
     "start:tmarket-bulgaria": "tsx crawlers/t-market/index.ts",
     "dev:tmarket-bulgaria": "tsx watch crawlers/t-market/index.ts",
-    "firebase-utils": "tsx crawlers/firebase-utils.ts"
+    "firebase-utils": "tsx crawlers/firebase-utils.ts",
+    "start:quito": "tsx quito/index.ts",
+    "dev:quito": "tsx watch quito/index.ts"
   },
   "keywords": [
     "crawler",
@@ -29,9 +31,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/secret-manager": "^6.1.0",
     "@google-cloud/storage": "^7.16.0",
     "@mendable/firecrawl-js": "^1.29.1",
+    "axios": "^1.7.7",
     "cheerio": "^1.1.0",
+    "express": "^4.21.0",
     "firebase-admin": "^13.4.0",
     "firecrawl": "^1.29.0",
     "jsdom": "^26.1.0",
@@ -39,6 +44,7 @@
     "pdfkit": "^0.15.0"
   },
   "devDependencies": {
+    "@types/express": "^5.0.0",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^24.0.8",
     "@types/pdfkit": "^0.13.4",

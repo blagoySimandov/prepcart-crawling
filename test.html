@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="bg">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="minimal-ui, width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#003870" />
+    <meta name="csrf-token" content="UmdEN294fivU4g9388zomWBAMymKKdw83EMcDHcb">
+    <meta name="description" content="Всички каталози и брошури с промоции на големите търговски вериги магазини в България на едно място.
+С приложението имате възможност да се абонирате за търговски вериги магазини , които ви интересуват и да следите кога излизат нови каталози и брошури от тях.">
+    <meta name="author" content="Ivan Dimov">
+    <meta name="apple-itunes-app" content="app-id=632332937, affiliate-data=myAffiliateData, app-argument=myURL">
+    <meta name="google-play-app" content="app-id=net.boxbg.katalozi">
+    <title>Каталози и брошури  - Kaufland
+</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/jquery.smartbanner.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="/css/build/app.css" media="screen" title="notitle" charset="utf-8">
+    
+    <style media="screen">
+    /* Read More Link section */
+    .sidebar-box {
+    max-height: 132px;
+    position: relative;
+    overflow: hidden;
+    }
+    .sidebar-box .bb {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%;
+    text-align: center;
+    margin: 0; padding-top: 5px;
+    background-color: #e5e5e5;
+    font-weight: bold;
+    text-shadow: 0px 1px 0px #FFF;
+    border:1px solid #CCC;
+    height:35px;
+    border-bottom: none;
+    }
+    .sidebar-box .button2{
+        display:none;
+    }
+    .shop-info .list-group1 a{
+        color: red;
+    }
+</style>
+    <style>
+    .gnw-map-service {
+        height: 530px!important;
+    }
+</style>    
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" type="text/css">
+            <link rel="stylesheet" href="https://katalozi-bg.info/vendor/maps/css/index.css?id=56062e68c820fdf21c3c4ec98fbe553b" type="text/css">
+    <link rel="apple-touch-icon"
+    href="/img/app-logos/bg.png"
+    type="image/png" id='iosicon'/>
+    <link rel="shortcut icon" href="/img/app-logos/bg.png"/>
+  </head>
+<body>
+<div id="app" >
+
+
+<header class="fixed-top">
+    <div class="top-bar d-none d-lg-block">
+        <div class="container">
+              <div class="row">
+                  
+<div class="col-4">
+    <ul class="social">
+        <li>
+            <a href="http://tv.boxbg.net/">
+            <strong>БГ TV Guide</strong>
+            </a>
+        </li>
+        <li style="padding-left:10px;">
+            <a href="http://radio.boxbg.net/">
+            <strong>iРадио</strong></a>
+        </li>
+    </ul>
+</div>
+
+<div class="col-8">
+    <ul class="rightc">
+        <li><i class="fa fa-envelope-o"></i> support@katalozi-bg.info</li>
+        <li><a href="http://BoxBg.Net" ><strong>BoxBg.Net</strong></a></li>
+    </ul>
+</div>
+
+            </div>
+        </div>
+    </div>
+    <!--top_bar-->
+
+
+    <nav class="navbar navbar-expand-md navbar-light main-navbar bg-light">
+    <div class="container">
+
+                    <a class="navbar-brand" href="/">
+                <img src="https://katalozi-bg.info/img/app-logos/bg.png" alt="" />
+                Каталози
+            </a>
+            <div class="d-flex d-block d-md-none justify-content-end">
+                    
+                    <button class="btn m-1 btn-primary" type="button" onclick="openNav()">
+                        <i class="fa fa-bars" aria-hidden="true"></i>
+                    </button>
+            </div>
+                
+        
+        
+
+        <div class="collapse navbar-collapse " id="navbarText">
+            <div class="d-flex mr-auto justify-content-center w-100">
+                <search-input class="w-75"></search-input>
+            </div>
+
+            <ul class="navbar-nav" v-cloak>
+                <li class="nav-item">
+                    <drop-down class="" style="width:190px;"
+                    :items='[&quot;\u0421\u043e\u0444\u0438\u044f&quot;,&quot;\u041f\u043b\u043e\u0432\u0434\u0438\u0432&quot;,&quot;\u0412\u0430\u0440\u043d\u0430&quot;,&quot;\u0411\u0443\u0440\u0433\u0430\u0441&quot;,&quot;\u0411\u043b\u0430\u0433\u043e\u0435\u0432\u0433\u0440\u0430\u0434&quot;,&quot;\u0412\u0435\u043b\u0438\u043a\u043e \u0422\u044a\u0440\u043d\u043e\u0432\u043e&quot;,&quot;\u041f\u043b\u0435\u0432\u0435\u043d&quot;,&quot;\u0420\u0443\u0441\u0435&quot;,&quot;\u0410\u0441\u0435\u043d\u043e\u0432\u0433\u0440\u0430\u0434&quot;,&quot;\u0411\u0430\u043d\u0441\u043a\u043e&quot;,&quot;\u0411\u043e\u0442\u0435\u0432\u0433\u0440\u0430\u0434&quot;,&quot;\u0412\u0438\u0434\u0438\u043d&quot;,&quot;\u0412\u0440\u0430\u0446\u0430&quot;,&quot;\u0413\u0430\u0431\u0440\u043e\u0432\u043e&quot;,&quot;\u0413\u043e\u0446\u0435 \u0414\u0435\u043b\u0447\u0435\u0432&quot;,&quot;\u0414\u0438\u043c\u0438\u0442\u0440\u043e\u0432\u0433\u0440\u0430\u0434&quot;,&quot;\u0414\u043e\u0431\u0440\u0438\u0447&quot;,&quot;\u0414\u0443\u043f\u043d\u0438\u0446\u0430&quot;,&quot;\u0418\u0445\u0442\u0438\u043c\u0430\u043d&quot;,&quot;\u041a\u0430\u0437\u0430\u043d\u043b\u044a\u043a&quot;,&quot;\u041a\u0430\u0440\u043b\u043e\u0432\u043e&quot;,&quot;\u041a\u044a\u0440\u0434\u0436\u0430\u043b\u0438&quot;,&quot;\u041b\u043e\u0432\u0435\u0447&quot;,&quot;\u041c\u043e\u043d\u0442\u0430\u043d\u0430&quot;,&quot;\u041f\u0430\u0437\u0430\u0440\u0434\u0436\u0438\u043a&quot;,&quot;\u041f\u0435\u0440\u043d\u0438\u043a&quot;,&quot;\u041f\u044a\u0440\u0432\u043e\u043c\u0430\u0439&quot;,&quot;\u0421\u0430\u043c\u043e\u043a\u043e\u0432&quot;,&quot;\u0421\u0430\u043d\u0434\u0430\u043d\u0441\u043a\u0438&quot;,&quot;\u0421\u0432\u0438\u043b\u0435\u043d\u0433\u0440\u0430\u0434&quot;,&quot;\u0421\u0432\u0438\u0449\u043e\u0432&quot;,&quot;\u0421\u0435\u0432\u043b\u0438\u0435\u0432\u043e&quot;,&quot;\u0421\u0438\u043b\u0438\u0441\u0442\u0440\u0430&quot;,&quot;\u0421\u043b\u0438\u0432\u0435\u043d&quot;,&quot;\u0421\u043c\u043e\u043b\u044f\u043d&quot;,&quot;\u0421\u0442\u0430\u0440\u0430 \u0417\u0430\u0433\u043e\u0440\u0430&quot;,&quot;\u0422\u044a\u0440\u0433\u043e\u0432\u0438\u0449\u0435&quot;,&quot;\u0425\u0430\u0441\u043a\u043e\u0432\u043e&quot;,&quot;\u0428\u0443\u043c\u0435\u043d&quot;,&quot;\u042f\u043c\u0431\u043e\u043b&quot;,&quot;\u041a\u044e\u0441\u0442\u0435\u043d\u0434\u0438\u043b&quot;,&quot;\u0420\u0430\u0437\u0433\u0440\u0430\u0434&quot;,&quot;\u0425\u0430\u0440\u043c\u0430\u043d\u043b\u0438&quot;,&quot;\u0420\u0430\u0432\u0434\u0430\/\u041d\u0435\u0441\u0435\u0431\u044a\u0440&quot;,&quot;\u041f\u0435\u0449\u0435\u0440\u0430&quot;,&quot;\u0412\u0435\u043b\u0438\u043d\u0433\u0440\u0430\u0434&quot;,&quot;\u041f\u0430\u043d\u0430\u0433\u044e\u0440\u0438\u0449\u0435&quot;,&quot;\u041f\u0440\u043e\u0432\u0430\u0434\u0438\u044f&quot;,&quot;\u0413\u043e\u0440\u043d\u0430 \u041e\u0440\u044f\u0445\u043e\u0432\u0438\u0446\u0430&quot;,&quot;\u0420\u0430\u0437\u043b\u043e\u0433&quot;,&quot;\u041f\u0435\u0442\u0440\u0438\u0447&quot;,&quot;\u041b\u0443\u043a\u043e\u0432\u0438\u0442&quot;,&quot;\u041d\u043e\u0432\u0430 \u0417\u0430\u0433\u043e\u0440\u0430&quot;,&quot;\u041f\u043e\u043c\u043e\u0440\u0438\u0435&quot;,&quot;\u041a\u043e\u0441\u0442\u0435\u043d\u0435\u0446&quot;,&quot;\u041f\u0438\u0440\u0434\u043e\u043f&quot;,&quot;\u0422\u0435\u0442\u0435\u0432\u0435\u043d&quot;,&quot;\u0422\u0440\u043e\u044f\u043d&quot;,&quot;\u041b\u043e\u043c&quot;,&quot;\u0420\u0430\u0434\u043e\u043c\u0438\u0440&quot;,&quot;\u0420\u0430\u0434\u043d\u0435\u0432\u043e&quot;,&quot;\u0411\u0435\u0440\u043a\u043e\u0432\u0438\u0446\u0430&quot;,&quot;\u0411\u044f\u043b\u0430 \u0421\u043b\u0430\u0442\u0438\u043d\u0430&quot;,&quot;\u041a\u043e\u0437\u043b\u043e\u0434\u0443\u0439&quot;,&quot;\u041f\u0430\u0432\u043b\u0438\u043a\u0435\u043d\u0438&quot;,&quot;\u041f\u043e\u043f\u043e\u0432\u043e&quot;,&quot;\u041e\u043c\u0443\u0440\u0442\u0430\u0433&quot;,&quot;\u0415\u043b\u0438\u043d \u041f\u0435\u043b\u0438\u043d&quot;,&quot;\u041d\u0435\u0441\u0435\u0431\u044a\u0440&quot;,&quot;\u041f\u0440\u0438\u043c\u043e\u0440\u0441\u043a\u043e&quot;,&quot;\u0410\u0439\u0442\u043e\u0441&quot;,&quot;\u0411\u0430\u043d\u043a\u044f&quot;,&quot;\u041a\u043e\u0441\u0442\u0438\u043d\u0431\u0440\u043e\u0434&quot;,&quot;\u041b\u043e\u0437\u0435\u043d&quot;,&quot;\u0421\u043b\u0438\u0432\u043d\u0438\u0446\u0430&quot;,&quot;\u0414\u0443\u043b\u043e\u0432\u043e&quot;,&quot;\u0421\u0442\u0440\u0430\u0436\u0438\u0446\u0430&quot;,&quot;\u041a\u0430\u0432\u0430\u0440\u043d\u0430&quot;,&quot;\u0411\u0430\u043b\u0447\u0438\u043a&quot;,&quot;\u0411\u0435\u043b\u043e\u0441\u043b\u0430\u0432&quot;,&quot;\u0414\u0440\u044f\u043d\u043e\u0432\u043e&quot;,&quot;\u0422\u0443\u0442\u0440\u0430\u043a\u0430\u043d&quot;,&quot;\u0421\u043b\u044a\u043d\u0447\u0435\u0432 \u0431\u0440\u044f\u0433&quot;,&quot;\u0427\u0438\u0440\u043f\u0430\u043d&quot;,&quot;\u0415\u043b\u0435\u043d\u0430&quot;,&quot;\u0418\u0432\u0430\u0439\u043b\u043e\u0432\u0433\u0440\u0430\u0434&quot;,&quot;\u0414\u0435\u0432\u0438\u043d&quot;,&quot;\u041c\u0430\u0434\u0430\u043d&quot;,&quot;\u200b\u0420\u0443\u0434\u043e\u0437\u0435\u043c&quot;,&quot;\u0420\u0430\u043a\u043e\u0432\u0441\u043a\u0438&quot;,&quot;\u0413\u0435\u043d\u0435\u0440\u0430\u043b \u0422\u043e\u0448\u0435\u0432\u043e&quot;,&quot;\u041a\u0430\u0440\u043d\u043e\u0431\u0430\u0442&quot;,&quot;\u0421\u0442\u0440\u044f\u043c\u0430&quot;,&quot;\u0411\u0430\u043d\u044f&quot;,&quot;\u0411\u043e\u0436\u0443\u0440\u0438\u0449\u0435&quot;,&quot;\u0411\u0443\u0445\u043e\u0432\u043e&quot;,&quot;\u0412\u043b\u0430\u0434\u0430\u044f&quot;,&quot;\u0413\u0435\u0440\u043c\u0430\u043d&quot;,&quot;\u0414\u0440\u0430\u0433\u043e\u043c\u0430\u043d&quot;,&quot;\u041d\u043e\u0432\u0438 \u0418\u0441\u043a\u044a\u0440&quot;,&quot;\u0421\u0432\u043e\u0433\u0435&quot;,&quot;\u041c\u0435\u0437\u0434\u0440\u0430&quot;,&quot;\u0426\u0430\u0440\u0435\u0432\u043e&quot;,&quot;\u0427\u0435\u0440\u043d\u043e\u043c\u043e\u0440\u0435\u0446&quot;,&quot;\u0421\u043e\u0437\u043e\u043f\u043e\u043b&quot;,&quot;\u0412\u0435\u043b\u0438\u043a\u043e&quot;,&quot;\u0415\u043b\u0445\u043e\u0432\u043e&quot;,&quot;\u041a\u043e\u0442\u0435\u043b&quot;,&quot;\u041b\u0435\u0432\u0441\u043a\u0438&quot;,&quot;\u0421\u0438\u043c\u0435\u043e\u043d\u043e\u0432\u0433\u0440\u0430\u0434&quot;,&quot;\u0421\u0440\u0435\u0434\u0435\u0446&quot;,&quot;\u0421\u0442\u0430\u043c\u0431\u043e\u043b\u0438\u0439\u0441\u043a\u0438&quot;,&quot;\u0421\u0442\u0430\u0440\u0430&quot;,&quot;\u0421\u0443\u043d\u0433\u0443\u0440\u043b\u0430\u0440\u0435&quot;,&quot;\u0422\u043e\u043f\u043e\u043b\u043e\u0432\u0433\u0440\u0430\u0434&quot;,&quot;\u041d\u043e\u0432\u0430&quot;,&quot;\u0410\u043a\u0441\u0430\u043a\u043e\u0432\u043e&quot;,&quot;\u0415\u0442\u0440\u043e\u043f\u043e\u043b\u0435&quot;,&quot;\u041a\u0440\u0443\u043c\u043e\u0432\u0433\u0440\u0430\u0434&quot;,&quot;\u0411\u043e\u0431\u043e\u0432 \u0434\u043e\u043b&quot;,&quot;\u0427\u0435\u0440\u0432\u0435\u043d \u0431\u0440\u044f\u0433&quot;,&quot;\u0410\u043b\u0431\u0435\u043d\u0430&quot;,&quot;\u0410\u0445\u0442\u043e\u043f\u043e\u043b&quot;,&quot;\u041a\u0443\u0431\u0440\u0430\u0442&quot;,&quot;\u0414\u043e\u043b\u043d\u0438 \u0447\u0438\u0444\u043b\u0438\u043a&quot;,&quot;\u041d\u043e\u0432\u0438 \u041f\u0430\u0437\u0430\u0440&quot;,&quot;\u0421\u0435\u043f\u0442\u0435\u043c\u0432\u0440\u0438&quot;]'
+                    v-on:selected='changeCity' search>
+                                                    <i class="fa fa-map-marker pr-1" aria-hidden="true"></i> Избери Град
+                                                <template slot="item" slot-scope="{ item }">
+                            <span>{{item}}</span>
+                        </template>
+                    </drop-down>
+                </li>
+                
+            </ul>
+
+        </div>
+
+    </div>
+    </nav>
+    <nav class="navbar navbar-light bg-light d-none d-md-block">
+        <div class="w-100 d-flex justify-content-center">
+            
+                <ul class="navbar-nav d-flex flex-column flex-md-row justify-content-between">
+      <li class="nav-item ">
+          <a class="nav-link py-1 d-inline-block" href="https://katalozi-bg.info">
+              <strong> <i class="fa fa-home" aria-hidden="true"></i> Последни </strong>
+          </a>
+      </li>
+      <li class="nav-item ">
+          <a class="nav-link py-1 d-inline-block " href="https://katalozi-bg.info/favorites">
+              <strong> <i class="fa fa-heart" aria-hidden="true"></i> Любими  </strong>
+          </a>
+      </li>
+      <li class="nav-item ">
+          <a class="nav-link py-1 d-inline-block" href="https://katalozi-bg.info/map">
+              <strong><i class="fa fa-map" aria-hidden="true"></i> Карта </strong>
+          </a>
+      </li>
+      <li class="nav-item dropdown ">
+          <a class="nav-link py-1 d-inline-block" href="https://katalozi-bg.info/category/Other">
+              <strong> <i class="fa fa-tags" aria-hidden="true"></i> Категории</strong>
+          </a>
+          <div class="dropdown-content">
+                              <a href="https://katalozi-bg.info/category/food_home" class="">
+                  Храни и Битови Стоки
+                </a>
+                              <a href="https://katalozi-bg.info/category/Cosmetics" class="">
+                  Козметика
+                </a>
+                              <a href="https://katalozi-bg.info/category/Electronics" class="">
+                  Бяла и черна техника
+                </a>
+                              <a href="https://katalozi-bg.info/category/Other" class="">
+                  Разни
+                </a>
+                              <a href="https://katalozi-bg.info/category/Mobile" class="">
+                  Мобилни
+                </a>
+                              <a href="https://katalozi-bg.info/category/Construction" class="">
+                  Строителство
+                </a>
+                              <a href="https://katalozi-bg.info/category/Furniture" class="">
+                  Мебели
+                </a>
+                        </div>
+      </li>
+      <li class="nav-item active">
+          <a class="nav-link py-1 d-inline-block" href="https://katalozi-bg.info/companies">
+              <strong> <i class="fa fa-shopping-cart" aria-hidden="true"></i> Магазини</strong>
+          </a>
+      </li>
+      <li class="nav-item dropdown">
+          <a class="nav-link py-1 d-none d-md-inline-block dropdown-toggle2"
+           data-toggle="dropdown" href="https://katalozi-bg.info/companies">
+              <strong><i class="fa fa-mobile" style="font-size: 1.3em;" aria-hidden="true"></i> Moble</strong>
+          </a>
+          <div class="dropdown-content">
+              <a href="https://itunes.apple.com/bg/app/katalozi/id632332937?ls=1&mt=8" target="_blank" style="width:180px; display:box;">
+                  <img src="/img/available-on-the-app-store.svg" style="height: 45px;" data-toggle="tooltip" data-placement="top" title="" data-original-title="Свали от AppStore за iOS">
+              </a>
+              <a href="https://play.google.com/store/apps/details?id=net.boxbg.katalozi" target="_blank" style="width:180px;">
+                  <img src="/img/en_generic_rgb_wo_60.png" style="height: 50px;" data-toggle="tooltip" data-placement="top" title="" data-original-title="Свали от GooglePlay за Android">
+              </a>
+          </div>
+      </li>
+  </ul>
+
+        </div>
+    </nav>
+</header>
+<div id="mySidenav" class="sidenav shadow bg-light">
+    <a href="javascript:void(0)" class="closebtn m-0 p-0" onclick="closeNav()">&times;</a>
+    <search-input class="w-100 p-2"></search-input>
+    <div class="p-2">
+        <drop-down style=""
+        :items='[&quot;\u0421\u043e\u0444\u0438\u044f&quot;,&quot;\u041f\u043b\u043e\u0432\u0434\u0438\u0432&quot;,&quot;\u0412\u0430\u0440\u043d\u0430&quot;,&quot;\u0411\u0443\u0440\u0433\u0430\u0441&quot;,&quot;\u0411\u043b\u0430\u0433\u043e\u0435\u0432\u0433\u0440\u0430\u0434&quot;,&quot;\u0412\u0435\u043b\u0438\u043a\u043e \u0422\u044a\u0440\u043d\u043e\u0432\u043e&quot;,&quot;\u041f\u043b\u0435\u0432\u0435\u043d&quot;,&quot;\u0420\u0443\u0441\u0435&quot;,&quot;\u0410\u0441\u0435\u043d\u043e\u0432\u0433\u0440\u0430\u0434&quot;,&quot;\u0411\u0430\u043d\u0441\u043a\u043e&quot;,&quot;\u0411\u043e\u0442\u0435\u0432\u0433\u0440\u0430\u0434&quot;,&quot;\u0412\u0438\u0434\u0438\u043d&quot;,&quot;\u0412\u0440\u0430\u0446\u0430&quot;,&quot;\u0413\u0430\u0431\u0440\u043e\u0432\u043e&quot;,&quot;\u0413\u043e\u0446\u0435 \u0414\u0435\u043b\u0447\u0435\u0432&quot;,&quot;\u0414\u0438\u043c\u0438\u0442\u0440\u043e\u0432\u0433\u0440\u0430\u0434&quot;,&quot;\u0414\u043e\u0431\u0440\u0438\u0447&quot;,&quot;\u0414\u0443\u043f\u043d\u0438\u0446\u0430&quot;,&quot;\u0418\u0445\u0442\u0438\u043c\u0430\u043d&quot;,&quot;\u041a\u0430\u0437\u0430\u043d\u043b\u044a\u043a&quot;,&quot;\u041a\u0430\u0440\u043b\u043e\u0432\u043e&quot;,&quot;\u041a\u044a\u0440\u0434\u0436\u0430\u043b\u0438&quot;,&quot;\u041b\u043e\u0432\u0435\u0447&quot;,&quot;\u041c\u043e\u043d\u0442\u0430\u043d\u0430&quot;,&quot;\u041f\u0430\u0437\u0430\u0440\u0434\u0436\u0438\u043a&quot;,&quot;\u041f\u0435\u0440\u043d\u0438\u043a&quot;,&quot;\u041f\u044a\u0440\u0432\u043e\u043c\u0430\u0439&quot;,&quot;\u0421\u0430\u043c\u043e\u043a\u043e\u0432&quot;,&quot;\u0421\u0430\u043d\u0434\u0430\u043d\u0441\u043a\u0438&quot;,&quot;\u0421\u0432\u0438\u043b\u0435\u043d\u0433\u0440\u0430\u0434&quot;,&quot;\u0421\u0432\u0438\u0449\u043e\u0432&quot;,&quot;\u0421\u0435\u0432\u043b\u0438\u0435\u0432\u043e&quot;,&quot;\u0421\u0438\u043b\u0438\u0441\u0442\u0440\u0430&quot;,&quot;\u0421\u043b\u0438\u0432\u0435\u043d&quot;,&quot;\u0421\u043c\u043e\u043b\u044f\u043d&quot;,&quot;\u0421\u0442\u0430\u0440\u0430 \u0417\u0430\u0433\u043e\u0440\u0430&quot;,&quot;\u0422\u044a\u0440\u0433\u043e\u0432\u0438\u0449\u0435&quot;,&quot;\u0425\u0430\u0441\u043a\u043e\u0432\u043e&quot;,&quot;\u0428\u0443\u043c\u0435\u043d&quot;,&quot;\u042f\u043c\u0431\u043e\u043b&quot;,&quot;\u041a\u044e\u0441\u0442\u0435\u043d\u0434\u0438\u043b&quot;,&quot;\u0420\u0430\u0437\u0433\u0440\u0430\u0434&quot;,&quot;\u0425\u0430\u0440\u043c\u0430\u043d\u043b\u0438&quot;,&quot;\u0420\u0430\u0432\u0434\u0430\/\u041d\u0435\u0441\u0435\u0431\u044a\u0440&quot;,&quot;\u041f\u0435\u0449\u0435\u0440\u0430&quot;,&quot;\u0412\u0435\u043b\u0438\u043d\u0433\u0440\u0430\u0434&quot;,&quot;\u041f\u0430\u043d\u0430\u0433\u044e\u0440\u0438\u0449\u0435&quot;,&quot;\u041f\u0440\u043e\u0432\u0430\u0434\u0438\u044f&quot;,&quot;\u0413\u043e\u0440\u043d\u0430 \u041e\u0440\u044f\u0445\u043e\u0432\u0438\u0446\u0430&quot;,&quot;\u0420\u0430\u0437\u043b\u043e\u0433&quot;,&quot;\u041f\u0435\u0442\u0440\u0438\u0447&quot;,&quot;\u041b\u0443\u043a\u043e\u0432\u0438\u0442&quot;,&quot;\u041d\u043e\u0432\u0430 \u0417\u0430\u0433\u043e\u0440\u0430&quot;,&quot;\u041f\u043e\u043c\u043e\u0440\u0438\u0435&quot;,&quot;\u041a\u043e\u0441\u0442\u0435\u043d\u0435\u0446&quot;,&quot;\u041f\u0438\u0440\u0434\u043e\u043f&quot;,&quot;\u0422\u0435\u0442\u0435\u0432\u0435\u043d&quot;,&quot;\u0422\u0440\u043e\u044f\u043d&quot;,&quot;\u041b\u043e\u043c&quot;,&quot;\u0420\u0430\u0434\u043e\u043c\u0438\u0440&quot;,&quot;\u0420\u0430\u0434\u043d\u0435\u0432\u043e&quot;,&quot;\u0411\u0435\u0440\u043a\u043e\u0432\u0438\u0446\u0430&quot;,&quot;\u0411\u044f\u043b\u0430 \u0421\u043b\u0430\u0442\u0438\u043d\u0430&quot;,&quot;\u041a\u043e\u0437\u043b\u043e\u0434\u0443\u0439&quot;,&quot;\u041f\u0430\u0432\u043b\u0438\u043a\u0435\u043d\u0438&quot;,&quot;\u041f\u043e\u043f\u043e\u0432\u043e&quot;,&quot;\u041e\u043c\u0443\u0440\u0442\u0430\u0433&quot;,&quot;\u0415\u043b\u0438\u043d \u041f\u0435\u043b\u0438\u043d&quot;,&quot;\u041d\u0435\u0441\u0435\u0431\u044a\u0440&quot;,&quot;\u041f\u0440\u0438\u043c\u043e\u0440\u0441\u043a\u043e&quot;,&quot;\u0410\u0439\u0442\u043e\u0441&quot;,&quot;\u0411\u0430\u043d\u043a\u044f&quot;,&quot;\u041a\u043e\u0441\u0442\u0438\u043d\u0431\u0440\u043e\u0434&quot;,&quot;\u041b\u043e\u0437\u0435\u043d&quot;,&quot;\u0421\u043b\u0438\u0432\u043d\u0438\u0446\u0430&quot;,&quot;\u0414\u0443\u043b\u043e\u0432\u043e&quot;,&quot;\u0421\u0442\u0440\u0430\u0436\u0438\u0446\u0430&quot;,&quot;\u041a\u0430\u0432\u0430\u0440\u043d\u0430&quot;,&quot;\u0411\u0430\u043b\u0447\u0438\u043a&quot;,&quot;\u0411\u0435\u043b\u043e\u0441\u043b\u0430\u0432&quot;,&quot;\u0414\u0440\u044f\u043d\u043e\u0432\u043e&quot;,&quot;\u0422\u0443\u0442\u0440\u0430\u043a\u0430\u043d&quot;,&quot;\u0421\u043b\u044a\u043d\u0447\u0435\u0432 \u0431\u0440\u044f\u0433&quot;,&quot;\u0427\u0438\u0440\u043f\u0430\u043d&quot;,&quot;\u0415\u043b\u0435\u043d\u0430&quot;,&quot;\u0418\u0432\u0430\u0439\u043b\u043e\u0432\u0433\u0440\u0430\u0434&quot;,&quot;\u0414\u0435\u0432\u0438\u043d&quot;,&quot;\u041c\u0430\u0434\u0430\u043d&quot;,&quot;\u200b\u0420\u0443\u0434\u043e\u0437\u0435\u043c&quot;,&quot;\u0420\u0430\u043a\u043e\u0432\u0441\u043a\u0438&quot;,&quot;\u0413\u0435\u043d\u0435\u0440\u0430\u043b \u0422\u043e\u0448\u0435\u0432\u043e&quot;,&quot;\u041a\u0430\u0440\u043d\u043e\u0431\u0430\u0442&quot;,&quot;\u0421\u0442\u0440\u044f\u043c\u0430&quot;,&quot;\u0411\u0430\u043d\u044f&quot;,&quot;\u0411\u043e\u0436\u0443\u0440\u0438\u0449\u0435&quot;,&quot;\u0411\u0443\u0445\u043e\u0432\u043e&quot;,&quot;\u0412\u043b\u0430\u0434\u0430\u044f&quot;,&quot;\u0413\u0435\u0440\u043c\u0430\u043d&quot;,&quot;\u0414\u0440\u0430\u0433\u043e\u043c\u0430\u043d&quot;,&quot;\u041d\u043e\u0432\u0438 \u0418\u0441\u043a\u044a\u0440&quot;,&quot;\u0421\u0432\u043e\u0433\u0435&quot;,&quot;\u041c\u0435\u0437\u0434\u0440\u0430&quot;,&quot;\u0426\u0430\u0440\u0435\u0432\u043e&quot;,&quot;\u0427\u0435\u0440\u043d\u043e\u043c\u043e\u0440\u0435\u0446&quot;,&quot;\u0421\u043e\u0437\u043e\u043f\u043e\u043b&quot;,&quot;\u0412\u0435\u043b\u0438\u043a\u043e&quot;,&quot;\u0415\u043b\u0445\u043e\u0432\u043e&quot;,&quot;\u041a\u043e\u0442\u0435\u043b&quot;,&quot;\u041b\u0435\u0432\u0441\u043a\u0438&quot;,&quot;\u0421\u0438\u043c\u0435\u043e\u043d\u043e\u0432\u0433\u0440\u0430\u0434&quot;,&quot;\u0421\u0440\u0435\u0434\u0435\u0446&quot;,&quot;\u0421\u0442\u0430\u043c\u0431\u043e\u043b\u0438\u0439\u0441\u043a\u0438&quot;,&quot;\u0421\u0442\u0430\u0440\u0430&quot;,&quot;\u0421\u0443\u043d\u0433\u0443\u0440\u043b\u0430\u0440\u0435&quot;,&quot;\u0422\u043e\u043f\u043e\u043b\u043e\u0432\u0433\u0440\u0430\u0434&quot;,&quot;\u041d\u043e\u0432\u0430&quot;,&quot;\u0410\u043a\u0441\u0430\u043a\u043e\u0432\u043e&quot;,&quot;\u0415\u0442\u0440\u043e\u043f\u043e\u043b\u0435&quot;,&quot;\u041a\u0440\u0443\u043c\u043e\u0432\u0433\u0440\u0430\u0434&quot;,&quot;\u0411\u043e\u0431\u043e\u0432 \u0434\u043e\u043b&quot;,&quot;\u0427\u0435\u0440\u0432\u0435\u043d \u0431\u0440\u044f\u0433&quot;,&quot;\u0410\u043b\u0431\u0435\u043d\u0430&quot;,&quot;\u0410\u0445\u0442\u043e\u043f\u043e\u043b&quot;,&quot;\u041a\u0443\u0431\u0440\u0430\u0442&quot;,&quot;\u0414\u043e\u043b\u043d\u0438 \u0447\u0438\u0444\u043b\u0438\u043a&quot;,&quot;\u041d\u043e\u0432\u0438 \u041f\u0430\u0437\u0430\u0440&quot;,&quot;\u0421\u0435\u043f\u0442\u0435\u043c\u0432\u0440\u0438&quot;]'
+        v-on:selected='changeCity' search>
+                            <i class="fa fa-map-marker pr-1" aria-hidden="true"></i> Избери Град
+                        <template slot="item" slot-scope="{ item }">
+                <span>{{item}}</span>
+            </template>
+        </drop-down>
+    </div>
+    
+    <nav class="navbar navbar-light bg-light">
+        
+            <ul class="navbar-nav d-flex flex-column flex-md-row justify-content-between">
+      <li class="nav-item ">
+          <a class="nav-link py-1 d-inline-block" href="https://katalozi-bg.info">
+              <strong> <i class="fa fa-home" aria-hidden="true"></i> Последни </strong>
+          </a>
+      </li>
+      <li class="nav-item ">
+          <a class="nav-link py-1 d-inline-block " href="https://katalozi-bg.info/favorites">
+              <strong> <i class="fa fa-heart" aria-hidden="true"></i> Любими  </strong>
+          </a>
+      </li>
+      <li class="nav-item ">
+          <a class="nav-link py-1 d-inline-block" href="https://katalozi-bg.info/map">
+              <strong><i class="fa fa-map" aria-hidden="true"></i> Карта </strong>
+          </a>
+      </li>
+      <li class="nav-item dropdown ">
+          <a class="nav-link py-1 d-inline-block" href="https://katalozi-bg.info/category/Other">
+              <strong> <i class="fa fa-tags" aria-hidden="true"></i> Категории</strong>
+          </a>
+          <div class="dropdown-content">
+                              <a href="https://katalozi-bg.info/category/food_home" class="">
+                  Храни и Битови Стоки
+                </a>
+                              <a href="https://katalozi-bg.info/category/Cosmetics" class="">
+                  Козметика
+                </a>
+                              <a href="https://katalozi-bg.info/category/Electronics" class="">
+                  Бяла и черна техника
+                </a>
+                              <a href="https://katalozi-bg.info/category/Other" class="">
+                  Разни
+                </a>
+                              <a href="https://katalozi-bg.info/category/Mobile" class="">
+                  Мобилни
+                </a>
+                              <a href="https://katalozi-bg.info/category/Construction" class="">
+                  Строителство
+                </a>
+                              <a href="https://katalozi-bg.info/category/Furniture" class="">
+                  Мебели
+                </a>
+                        </div>
+      </li>
+      <li class="nav-item active">
+          <a class="nav-link py-1 d-inline-block" href="https://katalozi-bg.info/companies">
+              <strong> <i class="fa fa-shopping-cart" aria-hidden="true"></i> Магазини</strong>
+          </a>
+      </li>
+      <li class="nav-item dropdown">
+          <a class="nav-link py-1 d-none d-md-inline-block dropdown-toggle2"
+           data-toggle="dropdown" href="https://katalozi-bg.info/companies">
+              <strong><i class="fa fa-mobile" style="font-size: 1.3em;" aria-hidden="true"></i> Moble</strong>
+          </a>
+          <div class="dropdown-content">
+              <a href="https://itunes.apple.com/bg/app/katalozi/id632332937?ls=1&mt=8" target="_blank" style="width:180px; display:box;">
+                  <img src="/img/available-on-the-app-store.svg" style="height: 45px;" data-toggle="tooltip" data-placement="top" title="" data-original-title="Свали от AppStore за iOS">
+              </a>
+              <a href="https://play.google.com/store/apps/details?id=net.boxbg.katalozi" target="_blank" style="width:180px;">
+                  <img src="/img/en_generic_rgb_wo_60.png" style="height: 50px;" data-toggle="tooltip" data-placement="top" title="" data-original-title="Свали от GooglePlay за Android">
+              </a>
+          </div>
+      </li>
+  </ul>
+    </nav>    
+</div>
+
+
+<div class="container" id="app2">
+    <div class="row">
+        <div class="col-12" style="padding: 0px; min-height:50px;" align="center" >
+            <div style="width:100%; " id="google-ads-2" >
+<script type="text/javascript">
+// REPLACE THIS WITH YOUR ADSENSE PUBLISHER ID.
+google_ad_client = "ca-pub-5347674045883414";
+
+// AD UNITS YOU WANT TO DISPLAY FOR THIS POSITION.
+var adsarr=[
+    // The format is [width, height, "ad slot number"]
+    [728, 90, "7460441101"],
+    [320, 50, "7572891909"]
+];
+
+// DO NOT MODIFY ANYTHING BELOW.
+// This shows the adsense ad depending on your screen size.
+adUnit   = document.getElementById("google-ads-2");
+
+var width=adUnit.offsetWidth;
+
+var got_adunit=0;
+for (var i = 0; i < adsarr.length; i++) {
+    adunitarr=adsarr[i];
+    if(width >= adunitarr[0]) {
+        google_ad_width = adunitarr[0];
+        google_ad_height = adunitarr[1];
+        google_ad_slot = adunitarr[2];
+        got_adunit=1;
+        break;
+    }
+}
+if (got_adunit == 0) {
+  adunitarr=adsarr[2];
+    google_ad_width = adunitarr[0];
+      google_ad_height = adunitarr[1];
+      google_ad_slot = adunitarr[2];
+}
+</script>
+
+<script type="text/javascript"
+src="https://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 p-0">
+
+            <ol class="breadcrumb align-items-center">
+                <li class="breadcrumb-item">
+                    <a class=" p-0" href="#"
+                    onClick="history.go(-1)" style="margin-right: 15px;">
+                    <i class="fa fa-chevron-left" aria-hidden="true"></i> Назад </a>
+                </li>
+                <li class="breadcrumb-item"><a href="https://katalozi-bg.info"> Начало </a></li>
+                <li class="breadcrumb-item"><a href="https://katalozi-bg.info/companies">  Магазини </a></li>
+                <li class="breadcrumb-item active"> Кауфланд </li>
+            </ol>
+
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 col-md-3" style="">
+            <div class="card shop-info" >
+                <div class="" style="padding-left: 5px;padding-right: 5px;margin: auto;">
+                    <img class="card-img-top img-responsive" src="/img/logos/17.jpg" style="max-width:100%;max-height:180px;">
+                </div>
+                <div class="list-group list-group-flush">
+                                                            <div class="list-group-item" class="list-group-item ">
+                        <span class="mr-auto">Магазин 58</span>
+                        [<a href="#list-shops"> Покажи </a>]
+                    </div>
+                                                                                    <div class="list-group-item" class="list-group-item ">
+                            <i class="fa fa-phone fa-4 pr-2" aria-hidden="true"></i> 0800 12 220</div>
+                                                                                                        <a href="https://www.facebook.com/kaufland.bulgaria/" target="_blank" 
+                            class="list-group-item list-group-item-action text-primary"
+                            data-toggle="tooltip" data-placement="top" title="facebook">
+                            <i class="fa fa-facebook pr-2" aria-hidden="true" style="font-size: 2em;"></i> Кауфланд
+                        </a>
+                                                            <a href="http://www.kaufland.bg/" target="_blank" class="list-group-item list-group-item-action text-primary">
+                        <i class="fa fa-globe pr-2 " aria-hidden="true" style="font-size: 2em;"></i> Сайт
+                    </a>
+                </div>
+                <!-- <div class="card-block">
+                    <a href="#" class="card-link">Card link</a>
+                    <a href="#" class="card-link">Another link</a>
+                </div> -->
+            </div>
+        </div>
+        <div class="col-12 col-md-9">
+            <div class="card">
+                <h3 class="card-header">За Кауфланд:</h3>
+                <div class="card-block sidebar-box">
+                    <p class="card-text lead p-3">
+                        В хипермаркетите на Kaufland в България Ви предлагаме изключителен избор от над 20 000 артикула. При нас ще откриете разнообразие от наложили се, познати марки, а също и продукти с високо качество на изключително изгодни цени, гарантирани под знака на нашите собствени марки.
+
+Kaufland спада към водещите фирми за търговия с хранителни стоки в Европа. Веригата води началото си от Германия и има филиали в Чехия, Словакия, Полша, Хърватска, Румъния, а от 9 март 2006 вече и в България.
+
+                    </p>
+                    <a href="#" class="button"><p class="lead bb read-more"> Прочети повече <i class="glyphicon glyphicon-chevron-down"></i></p></a>
+                    <a href="#" class="button2"><p class="lead bb read-less"> Скрии <i class="glyphicon glyphicon-chevron-up"></i></p></a>
+                </div>
+            </div>
+                        <div class="row">
+                                    <h4> С активен каталог/брошура : </h4>
+                            </div>
+            <div class="row">
+                
+                                <div class="col-6 col-md-4 col-lg-3 col-xl-3 catalog-thumbnail">
+                    <a href="https://katalozi-bg.info/catalogs/promo-katalog-Kaufland/30855">
+  <div class="card card-inverse">
+    <img class="card-img-top" src="https://katalozi-bg.info/catalogs/30855/small/1.jpg" alt=""/>
+                <div class="caption-overlay">
+      <h4 class="card-title"> Кауфланд </h4>
+      <p class="card-text">
+                      до 31авг 2025
+                </p>
+    </div>
+    <input class="nameText" value="Kaufland Кауфланд" type="hidden">
+    <div class="card-backdrop"></div>
+  </div>
+</a>
+                </div>
+                                <div class="col-6 col-md-4 col-lg-3 col-xl-3 catalog-thumbnail">
+                    <a href="https://katalozi-bg.info/catalogs/promo-katalog-Kaufland/30859">
+  <div class="card card-inverse">
+    <img class="card-img-top" src="https://katalozi-bg.info/catalogs/30859/small/1.jpg" alt=""/>
+                <div class="caption-overlay">
+      <h4 class="card-title"> Кауфланд </h4>
+      <p class="card-text">
+                      до 31авг 2025
+                </p>
+    </div>
+    <input class="nameText" value="Kaufland Кауфланд" type="hidden">
+    <div class="card-backdrop"></div>
+  </div>
+</a>
+                </div>
+                            </div>
+                    </div>
+    </div>
+
+
+        <div class="row mt-3" id="stores">
+        <div id="list-shops" style="margin-top:-80px;"></div>
+        <div class="row col-12 align-items-end d-flex">
+            <div class="col-2 hidden-md-down">
+                <!-- <h4 style="height:35px;" >Магазини (58)</h4> -->
+            </div>
+            <div class="order-xl-last col-12 col-lg-10  mb-2" style="height:100px;">
+                <div style="width:100%; " id="google-ads-2" >
+<script type="text/javascript">
+// REPLACE THIS WITH YOUR ADSENSE PUBLISHER ID.
+google_ad_client = "ca-pub-5347674045883414";
+
+// AD UNITS YOU WANT TO DISPLAY FOR THIS POSITION.
+var adsarr=[
+    // The format is [width, height, "ad slot number"]
+    [728, 90, "7460441101"],
+    [320, 50, "7572891909"]
+];
+
+// DO NOT MODIFY ANYTHING BELOW.
+// This shows the adsense ad depending on your screen size.
+adUnit   = document.getElementById("google-ads-2");
+
+var width=adUnit.offsetWidth;
+
+var got_adunit=0;
+for (var i = 0; i < adsarr.length; i++) {
+    adunitarr=adsarr[i];
+    if(width >= adunitarr[0]) {
+        google_ad_width = adunitarr[0];
+        google_ad_height = adunitarr[1];
+        google_ad_slot = adunitarr[2];
+        got_adunit=1;
+        break;
+    }
+}
+if (got_adunit == 0) {
+  adunitarr=adsarr[2];
+    google_ad_width = adunitarr[0];
+      google_ad_height = adunitarr[1];
+      google_ad_slot = adunitarr[2];
+}
+</script>
+
+<script type="text/javascript"
+src="https://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+            </div>
+            <div class="col-2 hidden-lg-up">
+                <h4 style="height:35px;" >Магазини:</h4>
+            </div>
+        </div>
+        
+    </div>
+            <button type="button" class="btn m-1 btn-primary d-block d-lg-none" onclick="showStores()"><i aria-hidden="true" class="fa fa-bars"></i></button>
+<div class="row col-12 p-0 "  style="border: solid 1px #ccc;">
+    <div class="col-4 p-0 d-none d-lg-block" style="height:530px; overflow:auto;">
+        <div class="list-group p-0 m-0 ">
+            <a href="#"  onclick="event.preventDefault();showAll({ lat: 42.8309505, lng: 25.285473 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Всички</h5>
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 44.111936, lng: 27.252524 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Силистра 5000</h5>
+                <span>Силистра ул. &quot;Н. Й. Вапцаров&quot; 8</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.566148, lng: 27.840018 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Добрич 4300</h5>
+                <span>Добрич ул. &quot;Дунав&quot; 55</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.276066, lng: 26.942923 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Шумен 1800</h5>
+                <span>Шумен бул. &quot;Симеон Велики&quot; 28</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.27815, lng: 26.9151 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Шумен 7700</h5>
+                <span>Шумен ул. &quot;Бели Лом&quot; 1</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.530097, lng: 26.512141 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Разград 4400</h5>
+                <span>Разград бул. &quot;Априлско въстание&quot; 3А</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.24238, lng: 27.8501 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Варна 3400</h5>
+                <span>Варна бул. &quot;Трети март&quot; 77</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.23432, lng: 27.88074 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Варна 1300</h5>
+                <span>Варна бул. &quot;Република&quot; 60</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.221125, lng: 27.890618 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Варна 1400</h5>
+                <span>Варна ул. &quot;Христо Смирненски&quot; 2</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.249268, lng: 26.555726 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Търговище 4800</h5>
+                <span>Търговище ул. &quot;Александър Стамболийски&quot; 27 </span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.832106, lng: 25.96838 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Русе 1600</h5>
+                <span>Русе бул. &quot;Христо Ботев&quot; 38</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.845675, lng: 25.965948 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Русе 1500</h5>
+                <span>Русе бул. &quot;Липник&quot; 8</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.531127, lng: 27.461644 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Бургас 7300</h5>
+                <span>Бургас ул. Транспортна 23</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.51457, lng: 27.450319 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Бургас 4000</h5>
+                <span>Бургас ул. &quot;Янко Комитов&quot; 8</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.682706, lng: 26.341967 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Сливен  1700</h5>
+                <span>Сливен бул. &quot;Георги Данчев&quot; 30</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.463199, lng: 27.409302 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Бургас 5700</h5>
+                <span>Бургас ул. &quot;Отец Матей Миткалото&quot; 45</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.67155, lng: 26.3257 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Сливен 7100</h5>
+                <span>Сливен бул. &quot;Цар Симеон&quot; 39</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.12308, lng: 25.683216 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Горна Оряховица 4500</h5>
+                <span>Горна Оряховица ул. &quot;Мано Тодоров&quot; 7А</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.477184, lng: 26.518216 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Ямбол 2000</h5>
+                <span>Ямбол ул. &quot;Граф Игнатиев&quot; 30</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.883247, lng: 25.321379 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Габрово 6700</h5>
+                <span>Габрово ул. &quot;Ивайло&quot; 6</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.021537, lng: 25.095584 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Севлиево 3200</h5>
+                <span>Севлиево ул. &quot;Стара Планина&quot; 78</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.433548, lng: 25.637246 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Стара Загора 4900</h5>
+                <span>Стара Загора ул. &quot;Иван Вазов&quot; 2</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.617851, lng: 25.369579 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Казанлък 5100</h5>
+                <span>Казанлък бул. &quot;23-ти Шипченски пехотен полк&quot; 153</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.415688, lng: 25.620422 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Стара Загора 3900</h5>
+                <span>Стара Загора ул. &quot;Стамо Пулев&quot; 2</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.418781, lng: 24.627096 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Плевен 5200</h5>
+                <span>Плевен ул. &quot;Гренадерска&quot; 119</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.395037, lng: 24.620941 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Плевен 3300</h5>
+                <span>Плевен ул. &quot;Сан Стефано&quot; 80</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.058938, lng: 25.586988 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Димитровград 4600</h5>
+                <span>Димитровград ул. &quot;Ромен Ролан&quot; 7</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.632861, lng: 24.816138 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Карлово 5500</h5>
+                <span>Карлово ул. &quot;Теофан Райнов&quot; 72</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 41.93178, lng: 25.56616 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Хасково 1900</h5>
+                <span>Хасково бул. &quot;Съединение&quot; 44</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.147333, lng: 24.784058 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Пловдив 2600</h5>
+                <span>Пловдив бул. &quot;Цариградско шосе&quot; 94</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.16671, lng: 24.749015 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Пловдив 4200</h5>
+                <span>Пловдив ул. &quot;Брезовско шосе&quot; 127</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.133354, lng: 24.789464 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Пловдив 1200</h5>
+                <span>Пловдив жк. &quot;Тракия&quot;, бул. &quot;Освобождение&quot; 47</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.140032, lng: 24.729589 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Пловдив 6900</h5>
+                <span>Пловдив бул. &quot;Пещерско шосе&quot; 36</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.121888, lng: 24.74086 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Пловдив 2700</h5>
+                <span>Пловдив ул.  &quot;Македония&quot; 97B</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.018751, lng: 24.860826 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Асеновград 7200</h5>
+                <span>Асеновград ул. &quot;Хаджи Димитър Стоилов&quot; №1</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.910888, lng: 23.804253 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Ботевград 5300</h5>
+                <span>Ботевград бул. &quot;Цар Освободител&quot; 35 Б</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.186335, lng: 24.346285 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Пазарджик 4100</h5>
+                <span>Пазарджик ул. &quot;Димчо Дебелянов&quot; 3</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.206909, lng: 23.544935 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Враца 2100</h5>
+                <span>Враца ул. &quot;Оборище&quot; 12</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.419775, lng: 23.22735 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Монтана 2400</h5>
+                <span>Монтана бул. &quot;3 Март&quot; 139 А</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.656348, lng: 23.399195 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland София 1100</h5>
+                <span>София жк. Дружба, ул. &quot;Хайделберг&quot; 1</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.67438, lng: 23.383045 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland София 5900</h5>
+                <span>София жк. &quot;Христо Смирненски&quot;, бул.&quot;Асен Йорданов&quot; 7</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.71277, lng: 23.35432 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland София 5600</h5>
+                <span>София ул. &quot;Резбарска&quot; 7Б</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.646043, lng: 23.379204 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland София 1000</h5>
+                <span>София ул. &quot;Филип Аврамов&quot; 3</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.710844, lng: 23.302251 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland София 2800</h5>
+                <span>София жк. &quot;Банишора&quot;, ул. &quot;Скопие&quot; 1</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.642464, lng: 23.33555 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland София 5800</h5>
+                <span>София ул. &quot;Проф. д-р Иван Странски&quot; №20</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.728318, lng: 23.286156 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland София 3000</h5>
+                <span>София ул. &quot;Хан Кубрат&quot; 61</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.689878, lng: 23.302416 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland София 7800</h5>
+                <span>София бул. &quot;Ген. Тотлебен&quot; 36</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.710161, lng: 23.258206 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland София 3700</h5>
+                <span>София бул. &quot;Петър Дертлиев&quot; 56</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.683105, lng: 23.26718 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland София 2900</h5>
+                <span>София жк. &quot;Овча Купел&quot;, ул. &quot;Кукуряк&quot; 3</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.670523, lng: 23.273567 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland София 6000</h5>
+                <span>София ул. &quot;Тодор Каблешков&quot; 3</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 44.000329, lng: 22.869214 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Видин 2200</h5>
+                <span>Видин бул. &quot;Панония&quot; 41</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.608425, lng: 23.041732 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Перник 3100</h5>
+                <span>Перник ул. &quot;6 Май&quot; 1</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.617622, lng: 23.013035 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Перник 3600</h5>
+                <span>Перник ул. &quot;Овар&quot; 1</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.26291, lng: 23.10902 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Дупница 6800</h5>
+                <span>Дупница ул. &quot;Св. Иван Рилски&quot; 96А</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.010711, lng: 23.094032 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Благоевград 3800</h5>
+                <span>Благоевград бул. &quot;Св. Димитър Солунски&quot; 21</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.2831, lng: 22.680328 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Кюстендил 2300</h5>
+                <span>Кюстендил бул. &quot;Македония&quot; 10</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.07524, lng: 25.611435 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>Kaufland Велико Търново</h5>
+                <span>Велико Търново бул. Краков 2Б</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 41.63452, lng: 25.378908 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>6600 Кърджали</h5>
+                <span>Кърджали ул. &quot;Здравец&quot; 13</span>
+                
+            </a>
+                        <a href="#"  onclick="event.preventDefault();showStore({ lat: 41.549965, lng: 23.270545 })"
+                class="list-group-item list-group-item-action p-2">
+                <h5>2800 Сандански</h5>
+                <span>Сандански ул. &quot;Свобода&quot; 55</span>
+                
+            </a>
+                    </div>
+    </div>
+    <div class="col-12 col-lg-8 p-0 " id="map1" style="height:540px;">
+        <div class=" p-0 d-none w-50" style="height:540px; overflow:auto;left: 0px;position: absolute;top: 0px;width: 260px;z-index: 9999;background:#FFF"  id="storesSidenav">
+            <div class="list-group p-0 m-0 ">
+                <a href="#"  onclick="event.preventDefault();showAll({ lat: 42.8309505, lng: 25.285473 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Всички</h5>
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 44.111936, lng: 27.252524 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Силистра 5000</h5>
+                    <span>Силистра ул. &quot;Н. Й. Вапцаров&quot; 8</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.566148, lng: 27.840018 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Добрич 4300</h5>
+                    <span>Добрич ул. &quot;Дунав&quot; 55</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.276066, lng: 26.942923 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Шумен 1800</h5>
+                    <span>Шумен бул. &quot;Симеон Велики&quot; 28</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.27815, lng: 26.9151 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Шумен 7700</h5>
+                    <span>Шумен ул. &quot;Бели Лом&quot; 1</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.530097, lng: 26.512141 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Разград 4400</h5>
+                    <span>Разград бул. &quot;Априлско въстание&quot; 3А</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.24238, lng: 27.8501 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Варна 3400</h5>
+                    <span>Варна бул. &quot;Трети март&quot; 77</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.23432, lng: 27.88074 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Варна 1300</h5>
+                    <span>Варна бул. &quot;Република&quot; 60</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.221125, lng: 27.890618 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Варна 1400</h5>
+                    <span>Варна ул. &quot;Христо Смирненски&quot; 2</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.249268, lng: 26.555726 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Търговище 4800</h5>
+                    <span>Търговище ул. &quot;Александър Стамболийски&quot; 27 </span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.832106, lng: 25.96838 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Русе 1600</h5>
+                    <span>Русе бул. &quot;Христо Ботев&quot; 38</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.845675, lng: 25.965948 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Русе 1500</h5>
+                    <span>Русе бул. &quot;Липник&quot; 8</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.531127, lng: 27.461644 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Бургас 7300</h5>
+                    <span>Бургас ул. Транспортна 23</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.51457, lng: 27.450319 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Бургас 4000</h5>
+                    <span>Бургас ул. &quot;Янко Комитов&quot; 8</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.682706, lng: 26.341967 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Сливен  1700</h5>
+                    <span>Сливен бул. &quot;Георги Данчев&quot; 30</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.463199, lng: 27.409302 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Бургас 5700</h5>
+                    <span>Бургас ул. &quot;Отец Матей Миткалото&quot; 45</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.67155, lng: 26.3257 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Сливен 7100</h5>
+                    <span>Сливен бул. &quot;Цар Симеон&quot; 39</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.12308, lng: 25.683216 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Горна Оряховица 4500</h5>
+                    <span>Горна Оряховица ул. &quot;Мано Тодоров&quot; 7А</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.477184, lng: 26.518216 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Ямбол 2000</h5>
+                    <span>Ямбол ул. &quot;Граф Игнатиев&quot; 30</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.883247, lng: 25.321379 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Габрово 6700</h5>
+                    <span>Габрово ул. &quot;Ивайло&quot; 6</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.021537, lng: 25.095584 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Севлиево 3200</h5>
+                    <span>Севлиево ул. &quot;Стара Планина&quot; 78</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.433548, lng: 25.637246 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Стара Загора 4900</h5>
+                    <span>Стара Загора ул. &quot;Иван Вазов&quot; 2</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.617851, lng: 25.369579 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Казанлък 5100</h5>
+                    <span>Казанлък бул. &quot;23-ти Шипченски пехотен полк&quot; 153</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.415688, lng: 25.620422 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Стара Загора 3900</h5>
+                    <span>Стара Загора ул. &quot;Стамо Пулев&quot; 2</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.418781, lng: 24.627096 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Плевен 5200</h5>
+                    <span>Плевен ул. &quot;Гренадерска&quot; 119</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.395037, lng: 24.620941 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Плевен 3300</h5>
+                    <span>Плевен ул. &quot;Сан Стефано&quot; 80</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.058938, lng: 25.586988 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Димитровград 4600</h5>
+                    <span>Димитровград ул. &quot;Ромен Ролан&quot; 7</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.632861, lng: 24.816138 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Карлово 5500</h5>
+                    <span>Карлово ул. &quot;Теофан Райнов&quot; 72</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 41.93178, lng: 25.56616 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Хасково 1900</h5>
+                    <span>Хасково бул. &quot;Съединение&quot; 44</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.147333, lng: 24.784058 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Пловдив 2600</h5>
+                    <span>Пловдив бул. &quot;Цариградско шосе&quot; 94</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.16671, lng: 24.749015 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Пловдив 4200</h5>
+                    <span>Пловдив ул. &quot;Брезовско шосе&quot; 127</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.133354, lng: 24.789464 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Пловдив 1200</h5>
+                    <span>Пловдив жк. &quot;Тракия&quot;, бул. &quot;Освобождение&quot; 47</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.140032, lng: 24.729589 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Пловдив 6900</h5>
+                    <span>Пловдив бул. &quot;Пещерско шосе&quot; 36</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.121888, lng: 24.74086 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Пловдив 2700</h5>
+                    <span>Пловдив ул.  &quot;Македония&quot; 97B</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.018751, lng: 24.860826 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Асеновград 7200</h5>
+                    <span>Асеновград ул. &quot;Хаджи Димитър Стоилов&quot; №1</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.910888, lng: 23.804253 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Ботевград 5300</h5>
+                    <span>Ботевград бул. &quot;Цар Освободител&quot; 35 Б</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.186335, lng: 24.346285 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Пазарджик 4100</h5>
+                    <span>Пазарджик ул. &quot;Димчо Дебелянов&quot; 3</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.206909, lng: 23.544935 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Враца 2100</h5>
+                    <span>Враца ул. &quot;Оборище&quot; 12</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.419775, lng: 23.22735 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Монтана 2400</h5>
+                    <span>Монтана бул. &quot;3 Март&quot; 139 А</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.656348, lng: 23.399195 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland София 1100</h5>
+                    <span>София жк. Дружба, ул. &quot;Хайделберг&quot; 1</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.67438, lng: 23.383045 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland София 5900</h5>
+                    <span>София жк. &quot;Христо Смирненски&quot;, бул.&quot;Асен Йорданов&quot; 7</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.71277, lng: 23.35432 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland София 5600</h5>
+                    <span>София ул. &quot;Резбарска&quot; 7Б</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.646043, lng: 23.379204 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland София 1000</h5>
+                    <span>София ул. &quot;Филип Аврамов&quot; 3</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.710844, lng: 23.302251 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland София 2800</h5>
+                    <span>София жк. &quot;Банишора&quot;, ул. &quot;Скопие&quot; 1</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.642464, lng: 23.33555 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland София 5800</h5>
+                    <span>София ул. &quot;Проф. д-р Иван Странски&quot; №20</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.728318, lng: 23.286156 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland София 3000</h5>
+                    <span>София ул. &quot;Хан Кубрат&quot; 61</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.689878, lng: 23.302416 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland София 7800</h5>
+                    <span>София бул. &quot;Ген. Тотлебен&quot; 36</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.710161, lng: 23.258206 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland София 3700</h5>
+                    <span>София бул. &quot;Петър Дертлиев&quot; 56</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.683105, lng: 23.26718 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland София 2900</h5>
+                    <span>София жк. &quot;Овча Купел&quot;, ул. &quot;Кукуряк&quot; 3</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.670523, lng: 23.273567 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland София 6000</h5>
+                    <span>София ул. &quot;Тодор Каблешков&quot; 3</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 44.000329, lng: 22.869214 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Видин 2200</h5>
+                    <span>Видин бул. &quot;Панония&quot; 41</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.608425, lng: 23.041732 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Перник 3100</h5>
+                    <span>Перник ул. &quot;6 Май&quot; 1</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.617622, lng: 23.013035 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Перник 3600</h5>
+                    <span>Перник ул. &quot;Овар&quot; 1</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.26291, lng: 23.10902 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Дупница 6800</h5>
+                    <span>Дупница ул. &quot;Св. Иван Рилски&quot; 96А</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.010711, lng: 23.094032 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Благоевград 3800</h5>
+                    <span>Благоевград бул. &quot;Св. Димитър Солунски&quot; 21</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 42.2831, lng: 22.680328 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Кюстендил 2300</h5>
+                    <span>Кюстендил бул. &quot;Македония&quot; 10</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 43.07524, lng: 25.611435 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>Kaufland Велико Търново</h5>
+                    <span>Велико Търново бул. Краков 2Б</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 41.63452, lng: 25.378908 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>6600 Кърджали</h5>
+                    <span>Кърджали ул. &quot;Здравец&quot; 13</span>
+                    
+                </a>
+                                <a href="#"  onclick="event.preventDefault();showStore({ lat: 41.549965, lng: 23.270545 })"
+                    class="list-group-item list-group-item-action p-2">
+                    <h5>2800 Сандански</h5>
+                    <span>Сандански ул. &quot;Свобода&quot; 55</span>
+                    
+                </a>
+                            </div>
+        </div>
+        <div class="gnw-map-service gnw-map-service__osm">
+        <div class="gnw-map fade" data-map-osm="{&quot;lat&quot;:42.8309505,&quot;lng&quot;:25.285473,&quot;zoom&quot;:7}" data-map-service="{&quot;type&quot;:&quot;https:\/\/{s}.tile.openstreetmap.org\/{z}\/{x}\/{y}.png&quot;}" data-map-markers="[{&quot;title&quot;:&quot;Kaufland \u0421\u0438\u043b\u0438\u0441\u0442\u0440\u0430 5000&quot;,&quot;lat&quot;:44.111936,&quot;lng&quot;:27.252524,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u0438\u043b\u0438\u0441\u0442\u0440\u0430 5000&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u041d. \u0419. \u0412\u0430\u043f\u0446\u0430\u0440\u043e\u0432\&quot; 8&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;086\/501100&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 20.00 \u0447\n\u041d\u0434.\n\u0437\u0430\u0442\u0432\u043e\u0440\u0435\u043d\u043e&quot;},{&quot;title&quot;:&quot;Kaufland \u0414\u043e\u0431\u0440\u0438\u0447 4300&quot;,&quot;lat&quot;:43.566148,&quot;lng&quot;:27.840018,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0414\u043e\u0431\u0440\u0438\u0447 4300&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0414\u0443\u043d\u0430\u0432\&quot; 55&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;058\/501300&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0428\u0443\u043c\u0435\u043d 1800&quot;,&quot;lat&quot;:43.276066,&quot;lng&quot;:26.942923,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0428\u0443\u043c\u0435\u043d 1800&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u0421\u0438\u043c\u0435\u043e\u043d \u0412\u0435\u043b\u0438\u043a\u0438\&quot; 28&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;054\/901300&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0428\u0443\u043c\u0435\u043d 7700&quot;,&quot;lat&quot;:43.27815,&quot;lng&quot;:26.9151,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0428\u0443\u043c\u0435\u043d 7700&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0411\u0435\u043b\u0438 \u041b\u043e\u043c\&quot; 1&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;054910400&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0420\u0430\u0437\u0433\u0440\u0430\u0434 4400&quot;,&quot;lat&quot;:43.530097,&quot;lng&quot;:26.512141,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0420\u0430\u0437\u0433\u0440\u0430\u0434 4400&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u0410\u043f\u0440\u0438\u043b\u0441\u043a\u043e \u0432\u044a\u0441\u0442\u0430\u043d\u0438\u0435\&quot; 3\u0410&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;084\/500600&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0412\u0430\u0440\u043d\u0430 3400&quot;,&quot;lat&quot;:43.24238,&quot;lng&quot;:27.8501,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0412\u0430\u0440\u043d\u0430 3400&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u0422\u0440\u0435\u0442\u0438 \u043c\u0430\u0440\u0442\&quot; 77&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;052\/905200&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0412\u0430\u0440\u043d\u0430 1300&quot;,&quot;lat&quot;:43.23432,&quot;lng&quot;:27.88074,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0412\u0430\u0440\u043d\u0430 1300&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u0420\u0435\u043f\u0443\u0431\u043b\u0438\u043a\u0430\&quot; 60&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;052\/901200&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0412\u0430\u0440\u043d\u0430 1400&quot;,&quot;lat&quot;:43.221125,&quot;lng&quot;:27.890618,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0412\u0430\u0440\u043d\u0430 1400&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0425\u0440\u0438\u0441\u0442\u043e \u0421\u043c\u0438\u0440\u043d\u0435\u043d\u0441\u043a\u0438\&quot; 2&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;052\/903200&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0422\u044a\u0440\u0433\u043e\u0432\u0438\u0449\u0435 4800&quot;,&quot;lat&quot;:43.249268,&quot;lng&quot;:26.555726,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0422\u044a\u0440\u0433\u043e\u0432\u0438\u0449\u0435 4800&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0410\u043b\u0435\u043a\u0441\u0430\u043d\u0434\u044a\u0440 \u0421\u0442\u0430\u043c\u0431\u043e\u043b\u0438\u0439\u0441\u043a\u0438\&quot; 27 &lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;0601\/50600&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0420\u0443\u0441\u0435 1600&quot;,&quot;lat&quot;:43.832106,&quot;lng&quot;:25.96838,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0420\u0443\u0441\u0435 1600&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u0425\u0440\u0438\u0441\u0442\u043e \u0411\u043e\u0442\u0435\u0432\&quot; 38&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;082\/501600&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0420\u0443\u0441\u0435 1500&quot;,&quot;lat&quot;:43.845675,&quot;lng&quot;:25.965948,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0420\u0443\u0441\u0435 1500&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u041b\u0438\u043f\u043d\u0438\u043a\&quot; 8&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;082\/501100&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0411\u0443\u0440\u0433\u0430\u0441 7300&quot;,&quot;lat&quot;:42.531127,&quot;lng&quot;:27.461644,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0411\u0443\u0440\u0433\u0430\u0441 7300&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \u0422\u0440\u0430\u043d\u0441\u043f\u043e\u0440\u0442\u043d\u0430 23&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;056\/598300&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u041d\u0434. 08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0411\u0443\u0440\u0433\u0430\u0441 4000&quot;,&quot;lat&quot;:42.51457,&quot;lng&quot;:27.450319,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0411\u0443\u0440\u0433\u0430\u0441 4000&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u042f\u043d\u043a\u043e \u041a\u043e\u043c\u0438\u0442\u043e\u0432\&quot; 8&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;056\/901200&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0421\u043b\u0438\u0432\u0435\u043d  1700&quot;,&quot;lat&quot;:42.682706,&quot;lng&quot;:26.341967,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u043b\u0438\u0432\u0435\u043d  1700&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u0413\u0435\u043e\u0440\u0433\u0438 \u0414\u0430\u043d\u0447\u0435\u0432\&quot; 30&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;044\/501400&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\r\n\u041d\u0434.\r\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0411\u0443\u0440\u0433\u0430\u0441 5700&quot;,&quot;lat&quot;:42.463199,&quot;lng&quot;:27.409302,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0411\u0443\u0440\u0433\u0430\u0441 5700&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u041e\u0442\u0435\u0446 \u041c\u0430\u0442\u0435\u0439 \u041c\u0438\u0442\u043a\u0430\u043b\u043e\u0442\u043e\&quot; 45&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;056\/907800&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0421\u043b\u0438\u0432\u0435\u043d 7100&quot;,&quot;lat&quot;:42.67155,&quot;lng&quot;:26.3257,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u043b\u0438\u0432\u0435\u043d 7100&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u0426\u0430\u0440 \u0421\u0438\u043c\u0435\u043e\u043d\&quot; 39&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;044501900&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0413\u043e\u0440\u043d\u0430 \u041e\u0440\u044f\u0445\u043e\u0432\u0438\u0446\u0430 4500&quot;,&quot;lat&quot;:43.12308,&quot;lng&quot;:25.683216,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0413\u043e\u0440\u043d\u0430 \u041e\u0440\u044f\u0445\u043e\u0432\u0438\u0446\u0430 4500&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u041c\u0430\u043d\u043e \u0422\u043e\u0434\u043e\u0440\u043e\u0432\&quot; 7\u0410&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;0618\/99800&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u042f\u043c\u0431\u043e\u043b 2000&quot;,&quot;lat&quot;:42.477184,&quot;lng&quot;:26.518216,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u042f\u043c\u0431\u043e\u043b 2000&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0413\u0440\u0430\u0444 \u0418\u0433\u043d\u0430\u0442\u0438\u0435\u0432\&quot; 30&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;046\/901000&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0413\u0430\u0431\u0440\u043e\u0432\u043e 6700&quot;,&quot;lat&quot;:42.883247,&quot;lng&quot;:25.321379,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0413\u0430\u0431\u0440\u043e\u0432\u043e 6700&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0418\u0432\u0430\u0439\u043b\u043e\&quot; 6&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;066\/900800&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0421\u0435\u0432\u043b\u0438\u0435\u0432\u043e 3200&quot;,&quot;lat&quot;:43.021537,&quot;lng&quot;:25.095584,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u0435\u0432\u043b\u0438\u0435\u0432\u043e 3200&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0421\u0442\u0430\u0440\u0430 \u041f\u043b\u0430\u043d\u0438\u043d\u0430\&quot; 78&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;0675\/90200&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0421\u0442\u0430\u0440\u0430 \u0417\u0430\u0433\u043e\u0440\u0430 4900&quot;,&quot;lat&quot;:42.433548,&quot;lng&quot;:25.637246,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u0442\u0430\u0440\u0430 \u0417\u0430\u0433\u043e\u0440\u0430 4900&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0418\u0432\u0430\u043d \u0412\u0430\u0437\u043e\u0432\&quot; 2&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;042\/298600&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u041a\u0430\u0437\u0430\u043d\u043b\u044a\u043a 5100&quot;,&quot;lat&quot;:42.617851,&quot;lng&quot;:25.369579,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u041a\u0430\u0437\u0430\u043d\u043b\u044a\u043a 5100&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;23-\u0442\u0438 \u0428\u0438\u043f\u0447\u0435\u043d\u0441\u043a\u0438 \u043f\u0435\u0445\u043e\u0442\u0435\u043d \u043f\u043e\u043b\u043a\&quot; 153&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;0431\/50200&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0421\u0442\u0430\u0440\u0430 \u0417\u0430\u0433\u043e\u0440\u0430 3900&quot;,&quot;lat&quot;:42.415688,&quot;lng&quot;:25.620422,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u0442\u0430\u0440\u0430 \u0417\u0430\u0433\u043e\u0440\u0430 3900&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0421\u0442\u0430\u043c\u043e \u041f\u0443\u043b\u0435\u0432\&quot; 2&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;042\/902100&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u041f\u043b\u0435\u0432\u0435\u043d 5200&quot;,&quot;lat&quot;:43.418781,&quot;lng&quot;:24.627096,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u041f\u043b\u0435\u0432\u0435\u043d 5200&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0413\u0440\u0435\u043d\u0430\u0434\u0435\u0440\u0441\u043a\u0430\&quot; 119&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;064\/902200&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u041f\u043b\u0435\u0432\u0435\u043d 3300&quot;,&quot;lat&quot;:43.395037,&quot;lng&quot;:24.620941,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u041f\u043b\u0435\u0432\u0435\u043d 3300&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0421\u0430\u043d \u0421\u0442\u0435\u0444\u0430\u043d\u043e\&quot; 80&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;064\/901300&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0414\u0438\u043c\u0438\u0442\u0440\u043e\u0432\u0433\u0440\u0430\u0434 4600&quot;,&quot;lat&quot;:42.058938,&quot;lng&quot;:25.586988,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0414\u0438\u043c\u0438\u0442\u0440\u043e\u0432\u0433\u0440\u0430\u0434 4600&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0420\u043e\u043c\u0435\u043d \u0420\u043e\u043b\u0430\u043d\&quot; 7&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;0391\/90600&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u041a\u0430\u0440\u043b\u043e\u0432\u043e 5500&quot;,&quot;lat&quot;:42.632861,&quot;lng&quot;:24.816138,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u041a\u0430\u0440\u043b\u043e\u0432\u043e 5500&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0422\u0435\u043e\u0444\u0430\u043d \u0420\u0430\u0439\u043d\u043e\u0432\&quot; 72&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;0335\/58600&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0425\u0430\u0441\u043a\u043e\u0432\u043e 1900&quot;,&quot;lat&quot;:41.93178,&quot;lng&quot;:25.56616,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0425\u0430\u0441\u043a\u043e\u0432\u043e 1900&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u0421\u044a\u0435\u0434\u0438\u043d\u0435\u043d\u0438\u0435\&quot; 44&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;038\/500900&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u041f\u043b\u043e\u0432\u0434\u0438\u0432 2600&quot;,&quot;lat&quot;:42.147333,&quot;lng&quot;:24.784058,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u041f\u043b\u043e\u0432\u0434\u0438\u0432 2600&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u0426\u0430\u0440\u0438\u0433\u0440\u0430\u0434\u0441\u043a\u043e \u0448\u043e\u0441\u0435\&quot; 94&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;032\/503600&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u041f\u043b\u043e\u0432\u0434\u0438\u0432 4200&quot;,&quot;lat&quot;:42.16671,&quot;lng&quot;:24.749015,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u041f\u043b\u043e\u0432\u0434\u0438\u0432 4200&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0411\u0440\u0435\u0437\u043e\u0432\u0441\u043a\u043e \u0448\u043e\u0441\u0435\&quot; 127&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;032\/503300&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u041f\u043b\u043e\u0432\u0434\u0438\u0432 1200&quot;,&quot;lat&quot;:42.133354,&quot;lng&quot;:24.789464,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u041f\u043b\u043e\u0432\u0434\u0438\u0432 1200&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0436\u043a. \&quot;\u0422\u0440\u0430\u043a\u0438\u044f\&quot;, \u0431\u0443\u043b. \&quot;\u041e\u0441\u0432\u043e\u0431\u043e\u0436\u0434\u0435\u043d\u0438\u0435\&quot; 47&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;032\/500300&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u041f\u043b\u043e\u0432\u0434\u0438\u0432 6900&quot;,&quot;lat&quot;:42.140032,&quot;lng&quot;:24.729589,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u041f\u043b\u043e\u0432\u0434\u0438\u0432 6900&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u041f\u0435\u0449\u0435\u0440\u0441\u043a\u043e \u0448\u043e\u0441\u0435\&quot; 36&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;032\/506400&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u041f\u043b\u043e\u0432\u0434\u0438\u0432 2700&quot;,&quot;lat&quot;:42.121888,&quot;lng&quot;:24.74086,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u041f\u043b\u043e\u0432\u0434\u0438\u0432 2700&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b.  \&quot;\u041c\u0430\u043a\u0435\u0434\u043e\u043d\u0438\u044f\&quot; 97B&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;032\/503500&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0410\u0441\u0435\u043d\u043e\u0432\u0433\u0440\u0430\u0434 7200&quot;,&quot;lat&quot;:42.018751,&quot;lng&quot;:24.860826,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0410\u0441\u0435\u043d\u043e\u0432\u0433\u0440\u0430\u0434 7200&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0425\u0430\u0434\u0436\u0438 \u0414\u0438\u043c\u0438\u0442\u044a\u0440 \u0421\u0442\u043e\u0438\u043b\u043e\u0432\&quot; \u21161&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;0331\/37000&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0411\u043e\u0442\u0435\u0432\u0433\u0440\u0430\u0434 5300&quot;,&quot;lat&quot;:42.910888,&quot;lng&quot;:23.804253,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0411\u043e\u0442\u0435\u0432\u0433\u0440\u0430\u0434 5300&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u0426\u0430\u0440 \u041e\u0441\u0432\u043e\u0431\u043e\u0434\u0438\u0442\u0435\u043b\&quot; 35 \u0411&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;0723\/90000&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u041f\u0430\u0437\u0430\u0440\u0434\u0436\u0438\u043a 4100&quot;,&quot;lat&quot;:42.186335,&quot;lng&quot;:24.346285,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u041f\u0430\u0437\u0430\u0440\u0434\u0436\u0438\u043a 4100&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0414\u0438\u043c\u0447\u043e \u0414\u0435\u0431\u0435\u043b\u044f\u043d\u043e\u0432\&quot; 3&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;034\/901100&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0412\u0440\u0430\u0446\u0430 2100&quot;,&quot;lat&quot;:43.206909,&quot;lng&quot;:23.544935,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0412\u0440\u0430\u0446\u0430 2100&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u041e\u0431\u043e\u0440\u0438\u0449\u0435\&quot; 12&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;092\/900500&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u041c\u043e\u043d\u0442\u0430\u043d\u0430 2400&quot;,&quot;lat&quot;:43.419775,&quot;lng&quot;:23.22735,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u041c\u043e\u043d\u0442\u0430\u043d\u0430 2400&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;3 \u041c\u0430\u0440\u0442\&quot; 139 \u0410&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;096\/500600&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0421\u043e\u0444\u0438\u044f 1100&quot;,&quot;lat&quot;:42.656348,&quot;lng&quot;:23.399195,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u043e\u0444\u0438\u044f 1100&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0436\u043a. \u0414\u0440\u0443\u0436\u0431\u0430, \u0443\u043b. \&quot;\u0425\u0430\u0439\u0434\u0435\u043b\u0431\u0435\u0440\u0433\&quot; 1&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;02\/4013400&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0421\u043e\u0444\u0438\u044f 5900&quot;,&quot;lat&quot;:42.67438,&quot;lng&quot;:23.383045,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u043e\u0444\u0438\u044f 5900&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0436\u043a. \&quot;\u0425\u0440\u0438\u0441\u0442\u043e \u0421\u043c\u0438\u0440\u043d\u0435\u043d\u0441\u043a\u0438\&quot;, \u0431\u0443\u043b.\&quot;\u0410\u0441\u0435\u043d \u0419\u043e\u0440\u0434\u0430\u043d\u043e\u0432\&quot; 7&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;02\/4011500&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0421\u043e\u0444\u0438\u044f 5600&quot;,&quot;lat&quot;:42.71277,&quot;lng&quot;:23.35432,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u043e\u0444\u0438\u044f 5600&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0420\u0435\u0437\u0431\u0430\u0440\u0441\u043a\u0430\&quot; 7\u0411&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;02\/4622400&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0421\u043e\u0444\u0438\u044f 1000&quot;,&quot;lat&quot;:42.646043,&quot;lng&quot;:23.379204,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u043e\u0444\u0438\u044f 1000&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0424\u0438\u043b\u0438\u043f \u0410\u0432\u0440\u0430\u043c\u043e\u0432\&quot; 3&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;02\/4015400&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0421\u043e\u0444\u0438\u044f 2800&quot;,&quot;lat&quot;:42.710844,&quot;lng&quot;:23.302251,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u043e\u0444\u0438\u044f 2800&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0436\u043a. \&quot;\u0411\u0430\u043d\u0438\u0448\u043e\u0440\u0430\&quot;, \u0443\u043b. \&quot;\u0421\u043a\u043e\u043f\u0438\u0435\&quot; 1&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;02\/4032800&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0421\u043e\u0444\u0438\u044f 5800&quot;,&quot;lat&quot;:42.642464,&quot;lng&quot;:23.33555,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u043e\u0444\u0438\u044f 5800&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u041f\u0440\u043e\u0444. \u0434-\u0440 \u0418\u0432\u0430\u043d \u0421\u0442\u0440\u0430\u043d\u0441\u043a\u0438\&quot; \u211620&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;02\/9048800&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0421\u043e\u0444\u0438\u044f 3000&quot;,&quot;lat&quot;:42.728318,&quot;lng&quot;:23.286156,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u043e\u0444\u0438\u044f 3000&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0425\u0430\u043d \u041a\u0443\u0431\u0440\u0430\u0442\&quot; 61&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;02\/4019700&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0421\u043e\u0444\u0438\u044f 7800&quot;,&quot;lat&quot;:42.689878,&quot;lng&quot;:23.302416,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u043e\u0444\u0438\u044f 7800&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u0413\u0435\u043d. \u0422\u043e\u0442\u043b\u0435\u0431\u0435\u043d\&quot; 36&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;02\/90 512 00&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0421\u043e\u0444\u0438\u044f 3700&quot;,&quot;lat&quot;:42.710161,&quot;lng&quot;:23.258206,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u043e\u0444\u0438\u044f 3700&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u041f\u0435\u0442\u044a\u0440 \u0414\u0435\u0440\u0442\u043b\u0438\u0435\u0432\&quot; 56&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;02\/4626900&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0421\u043e\u0444\u0438\u044f 2900&quot;,&quot;lat&quot;:42.683105,&quot;lng&quot;:23.26718,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u043e\u0444\u0438\u044f 2900&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0436\u043a. \&quot;\u041e\u0432\u0447\u0430 \u041a\u0443\u043f\u0435\u043b\&quot;, \u0443\u043b. \&quot;\u041a\u0443\u043a\u0443\u0440\u044f\u043a\&quot; 3&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;02\/4032900&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0421\u043e\u0444\u0438\u044f 6000&quot;,&quot;lat&quot;:42.670523,&quot;lng&quot;:23.273567,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0421\u043e\u0444\u0438\u044f 6000&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0422\u043e\u0434\u043e\u0440 \u041a\u0430\u0431\u043b\u0435\u0448\u043a\u043e\u0432\&quot; 3&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;02\/4006100&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 07.00 - 22.00 \u0447\n\u041d\u0434.\n08.00 - 21.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0412\u0438\u0434\u0438\u043d 2200&quot;,&quot;lat&quot;:44.000329,&quot;lng&quot;:22.869214,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0412\u0438\u0434\u0438\u043d 2200&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u041f\u0430\u043d\u043e\u043d\u0438\u044f\&quot; 41&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;094\/901200&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u041f\u0435\u0440\u043d\u0438\u043a 3100&quot;,&quot;lat&quot;:42.608425,&quot;lng&quot;:23.041732,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u041f\u0435\u0440\u043d\u0438\u043a 3100&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;6 \u041c\u0430\u0439\&quot; 1&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;076\/501100&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u041f\u0435\u0440\u043d\u0438\u043a 3600&quot;,&quot;lat&quot;:42.617622,&quot;lng&quot;:23.013035,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u041f\u0435\u0440\u043d\u0438\u043a 3600&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u041e\u0432\u0430\u0440\&quot; 1&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;076\/501200&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 20.00 \u0447\n\u041d\u0434.\n\u0437\u0430\u0442\u0432\u043e\u0440\u0435\u043d\u043e&quot;},{&quot;title&quot;:&quot;Kaufland \u0414\u0443\u043f\u043d\u0438\u0446\u0430 6800&quot;,&quot;lat&quot;:42.26291,&quot;lng&quot;:23.10902,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0414\u0443\u043f\u043d\u0438\u0446\u0430 6800&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0421\u0432. \u0418\u0432\u0430\u043d \u0420\u0438\u043b\u0441\u043a\u0438\&quot; 96\u0410&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;070155000&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0411\u043b\u0430\u0433\u043e\u0435\u0432\u0433\u0440\u0430\u0434 3800&quot;,&quot;lat&quot;:42.010711,&quot;lng&quot;:23.094032,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0411\u043b\u0430\u0433\u043e\u0435\u0432\u0433\u0440\u0430\u0434 3800&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u0421\u0432. \u0414\u0438\u043c\u0438\u0442\u044a\u0440 \u0421\u043e\u043b\u0443\u043d\u0441\u043a\u0438\&quot; 21&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;073\/500800&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u041a\u044e\u0441\u0442\u0435\u043d\u0434\u0438\u043b 2300&quot;,&quot;lat&quot;:42.2831,&quot;lng&quot;:22.680328,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u041a\u044e\u0441\u0442\u0435\u043d\u0434\u0438\u043b 2300&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \&quot;\u041c\u0430\u043a\u0435\u0434\u043e\u043d\u0438\u044f\&quot; 10&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;078\/900400&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\n\u041d\u0434.\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;Kaufland \u0412\u0435\u043b\u0438\u043a\u043e \u0422\u044a\u0440\u043d\u043e\u0432\u043e&quot;,&quot;lat&quot;:43.07524,&quot;lng&quot;:25.611435,&quot;popup&quot;:&quot;&lt;h3&gt;Kaufland \u0412\u0435\u043b\u0438\u043a\u043e \u0422\u044a\u0440\u043d\u043e\u0432\u043e&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0431\u0443\u043b. \u041a\u0440\u0430\u043a\u043e\u0432 2\u0411&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u041f\u043d. - \u0421\u0431. 08.00 - 21.00 \u0447\r\n\u041d\u0434.\r\n08.00 - 20.00 \u0447&quot;},{&quot;title&quot;:&quot;6600 \u041a\u044a\u0440\u0434\u0436\u0430\u043b\u0438&quot;,&quot;lat&quot;:41.63452,&quot;lng&quot;:25.378908,&quot;popup&quot;:&quot;&lt;h3&gt;6600 \u041a\u044a\u0440\u0434\u0436\u0430\u043b\u0438&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0417\u0434\u0440\u0430\u0432\u0435\u0446\&quot; 13&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;080012220&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;7:00 - 21:00 \u0447\u0430\u0441\u0430&quot;},{&quot;title&quot;:&quot;2800 \u0421\u0430\u043d\u0434\u0430\u043d\u0441\u043a\u0438&quot;,&quot;lat&quot;:41.549965,&quot;lng&quot;:23.270545,&quot;popup&quot;:&quot;&lt;h3&gt;2800 \u0421\u0430\u043d\u0434\u0430\u043d\u0441\u043a\u0438&lt;\/h3&gt;\u0410\u0434\u0440\u0435\u0441:&lt;br&gt;\u0443\u043b. \&quot;\u0421\u0432\u043e\u0431\u043e\u0434\u0430\&quot; 55&lt;br&gt;\u0422\u0435\u043b\u0435\u0444\u043e\u043d:&lt;br&gt;&lt;br&gt;\u0420\u0430\u0431\u043e\u0442\u043d\u043e \u0412\u0440\u0435\u043c\u0435:&lt;br&gt;\u043d\u0434: 09:00 - 18:00 \u0447\u0430\u0441\u0430 \u043f\u043d: 08:00 - 22:00 \u0447\u0430\u0441\u0430 \u0432\u0442 - \u0441\u0431: 07:00 - 22:00 \u0447\u0430\u0441\u0430&quot;}]"></div>
+    </div>
+
+    </div>
+</div>
+
+</div>
+
+<br>
+
+<footer id="myFooter">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 links">
+                <h5></h5>
+                <ul>
+                    <li><a href="https://katalozi-bg.info"> Последни </a></li>
+                    <li><a href="https://katalozi-bg.info/companies"> Магазини </a></li>
+                    <li><a href="https://katalozi-bg.info/category/Other"> Категории</a></li>
+                    <!-- <li><a href="#">Контакти</a></li> -->
+                </ul>
+            </div>
+            <div class="col-md-3 info" style="text-align: center;">
+    <h5>
+        <img src="/img/logoAbout.png" alt="" style="width: 50px;">
+            Каталози</h5>
+    <p> Разглеждаите каталози навсякъде с нашето мобилно приложение.</p>
+
+        <a href="https://itunes.apple.com/bg/app/katalozi/id632332937?ls=1&mt=8"
+        target="_blank" style="width:180px; display:box;margin-right: 20px;">
+        <img src="/img/available-on-the-app-store.svg" style="height: 52px;margin-bottom: 10px;"
+        data-toggle="tooltip" data-placement="top" title="" data-original-title="Свали от AppStore за iOS">
+        </a>
+        <!-- -->
+        <a href="https://play.google.com/store/apps/details?id=net.boxbg.katalozi" target="_blank"
+        style="width:180px;margin-right: 20px;">
+        <img src="/img/en_generic_rgb_wo_60.png" style="height: 52px;"
+        data-toggle="tooltip" data-placement="top" title="" data-original-title="Свали от GooglePlay за Android">
+        </a>
+
+</div>
+<div class="col-md-3 info text-center">
+    <h5><img src="/img/tvguideIcon.png" style="width: 50px;margin-right:5px;" alt="">
+            БгTvGuide</h5>
+    <p> Следите седмичната програма на над 100 телевизии.</p>
+        <a href="https://itunes.apple.com/bg/app/bg-tv-guide/id456882655?mt=8"
+        target="_blank" style="width:180px; display:box;">
+        <img src="/img/available-on-the-app-store.svg" style="height: 52px;margin-bottom: 10px;"
+            data-toggle="tooltip" data-placement="top" title="" data-original-title="Свали от AppStore за iOS">
+        </a>
+        <a href="https://play.google.com/store/apps/details?id=net.boxbg.bgtvguide" target="_blank" style="width:180px;">
+        <img src="/img/en_generic_rgb_wo_60.png" style="height: 52px;margin-bottom: 10px;"
+        data-toggle="tooltip" data-placement="top" title="" data-original-title="Свали от GooglePlay за Android">
+        </a>
+        <a href="http://tv.boxbg.net/" target="_blank" style="width:100px;">
+        <img src="/img/WebAppIconBanner.png" style="height: 52px;" data-toggle="tooltip"
+        data-placement="top" title="" data-original-title="Отвори Web версия на http://tv.boxbg.net">
+        </a>
+</div>
+<div class="col-md-3 info" style="text-align: center;">
+    <h5><img src="/img/FavIco_radio.png" style="width: 50px;margin-right:5px;" alt=""> iРадио</h5>
+    <p>Най-добрия начин да слушаш радио пред компютара.</p>
+    <a href="http://radio.boxbg.net/" target="_blank" style="width:150px;">
+        <img src="/img/WebAppIconBanner.png" style="height: 52px;" data-toggle="tooltip"
+        data-placement="top" title="" data-original-title="Отвори Web версия на http://tv.boxbg.net">
+    </a>
+</div>
+        </div>
+    </div>
+    <div class="second-bar">
+    <div class="container">
+            <span class="logo">
+                © 2017 Katalozi-bg.info
+            </span>
+            <div class="social-icons">
+                <a href="http://boxbg.net" target="_blank">BoxBg.net</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+</div>
+<!-- JavaScripts -->
+<script src="https://maps.googleapis.com/maps/api/js?key="></script>
+<script src="/js/build/manifest.js?id=5e0cf8ffd103f66a9377ac7c4166d304"></script>
+<script src="/js/build/vendor.js?id=f7ac7f0ea6eb1a4a33ca6356ca009898"></script>
+<script src="/js/build/app.js?id=da4ab1ec2ca526141842919502356d7b"></script>
+<script defer src="https://umami.boxbg.net/script.js" data-website-id="6f4591a5-c07a-4d2c-b9e0-f83fe9a6f4df"></script>
+
+<script type="text/javascript">
+    var $el, $ps, $up, totalHeight;
+    $(".sidebar-box .button").click(function() {
+        totalHeight = 0
+        $el = $(this);
+        $p  = $(this);//$el.parent();
+        $up = $p.parent();
+        $ps = $up.find("p:not('.read-more')");
+    // measure how tall inside should be by adding together heights of all inside paragraphs (except read-more paragraph)
+        $ps.each(function() {
+            totalHeight += $(this).outerHeight();
+        });
+
+        $up.css({
+            // Set height to prevent instant jumpdown when max height is removed
+          "height": $up.height(),
+          "max-height": 9999
+        })
+        .animate({
+          "height": totalHeight+50
+        });
+        // fade out read-more
+        $p.hide();
+        $(".sidebar-box .button2").show();
+        // prevent jump-down
+        return false;
+    });
+    $(".sidebar-box .button2").click(function() {
+        totalHeight = 0
+        $el = $(this);
+        $p  = $(this);//$el.parent();
+        $up = $p.parent();
+        // measure how tall inside should be by adding together heights of all inside paragraphs (except read-more paragraph)
+        $(".sidebar-box").css({
+          // Set height to prevent instant jumpdown when max height is removed
+          "height": $(".sidebar-box").height(),
+        })
+        .animate({
+          "height": 132
+        });
+
+        $p.hide();
+        $(".sidebar-box .button").show();
+        return false;
+    });
+</script>
+
+<script type="text/javascript">
+
+
+
+$(window).scroll(function() {
+    //on reader stop 
+    if (document.location.toString().indexOf("/catalogs/") >= 0) {        
+        return;
+    }
+
+  if ($(document).scrollTop() > 60) {
+    //$('nav').addClass('shrink');
+    //$('.top_bar').hide();
+    $('.top-bar').removeClass('d-lg-block');
+    $('.top-bar').addClass('d-lg-none');
+    // $('.main-navbar').hide();
+  } else {
+    //$('nav').removeClass('shrink');
+    $('.top-bar').removeClass('d-lg-none');
+    $('.top-bar').addClass('d-lg-block');
+    // $('.top_bar').show();
+    // $('.main-navbar').show();
+  }
+});
+
+function openNav() {
+  document.getElementById("mySidenav").style.width = "250px";
+}
+
+function closeNav() {
+  document.getElementById("mySidenav").style.width = "0";
+}
+
+</script>
+
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin="" type="text/javascript"></script>
+        
+        <script src="https://katalozi-bg.info/vendor/maps/js/index.js?id=6508504506f20e7f033c7de36683001a" type="text/javascript"></script>
+                    <script>
+        var mapStores;
+        window.addEventListener('LaravelMaps:MapInitialized', function (event) {
+            var element = event.detail.element;
+            mapStores = event.detail.map;
+            var markers = event.detail.markers;
+            var service = event.detail.service;
+            // console.log('map initialized', element, map, markers, service);
+        });
+    
+        window.addEventListener('LaravelMaps:MarkerClicked', function (event) {
+            // var element = event.detail.element;
+            // var map = event.detail.map;
+            // var marker = event.detail.marker;
+            // var service = event.detail.service;
+            // map.setZoom(10);
+            console.log(marker._latlng);
+            map.setView(marker._latlng, 13);
+            console.log(marker._latlng);
+            // console.log('marker clicked', element, map, marker, service);
+        });
+        function showStore(_latlng) {
+            mapStores.setView(_latlng, 15);
+        }
+        function showAll(_latlng) {
+            mapStores.setView(_latlng, 7);
+        }
+        function showStores() {
+            //document.getElementById("storesSidenav").style.width = "250px";
+            if($( "#storesSidenav" ).hasClass('d-none')){
+                $( "#storesSidenav" ).removeClass( "d-none" );
+                $( "#storesSidenav" ).addClass( "d-block" );
+                console.log('test')
+            }else{
+                $( "#storesSidenav" ).removeClass( "d-block" );
+                $( "#storesSidenav" ).addClass( "d-none" );
+            }
+            //document.getElementById("storesSidenav").class.width = "250px";
+        }
+    </script>
+
+</body>
+</html>
+
+

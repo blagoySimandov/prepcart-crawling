@@ -10,7 +10,7 @@ const BASE_INDEX = "0";
 
 async function main() {
   try {
-    console.log("🏪 Starting Fantastico Bulgaria crawler...");
+    console.log("🏪 Startin gLidl Bulgaria crawler...");
 
     const crawler = new BroshuraBgCrawler({
       storeId: STORE_ID,
@@ -22,7 +22,7 @@ async function main() {
 
     const result = await crawler.crawlAndSaveWithCloudStorage();
 
-    console.log(`🎉 Fantastico crawler completed successfully!`);
+    console.log(`🎉Lidl  crawler completed successfully!`);
     console.log(`📄 Local file: ${result.filename}`);
     if (result.cloudPath) {
       console.log(`☁️ Cloud storage: ${result.cloudPath}`);

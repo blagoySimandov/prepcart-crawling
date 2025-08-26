@@ -7,6 +7,11 @@ import { Writable } from "stream";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import { firebaseBrochureService, BrochureRecord } from "./firebase-service.js";
 import { storePdf } from "./storage.js";
+import {
+  WebshareProxyService,
+  WebshareProxy,
+} from "./webshare-proxy-service.js";
+import { SecretsManager } from "./secrets-manager.js";
 
 export interface BrochureInfo {
   validToDate: Date;
@@ -24,12 +29,16 @@ export interface BroshuraBgCrawlerConfig {
   storeSlug: string;
   imageSuffix: string;
   baseIndex?: string;
+  projectId?: string;
 }
 
 export class BroshuraBgCrawler {
   private config: BroshuraBgCrawlerConfig;
   private startLink: string;
-  private readonly proxyAgent: HttpsProxyAgent<string>;
+  private proxyAgent?: HttpsProxyAgent<string>;
+  private webshareService?: WebshareProxyService;
+  private currentProxy?: WebshareProxy;
+  private secretsManager: SecretsManager;
   private readonly defaultHeaders = {
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
@@ -47,10 +56,53 @@ export class BroshuraBgCrawler {
       baseIndex: config.baseIndex || "0",
     };
     this.startLink = `https://www.broshura.bg/h/${config.storeSlug}`;
+    this.secretsManager = new SecretsManager(config.projectId);
+  }
 
-    const proxyUrl = "http://wckkuhds:wrwzkpqoyr76@82.22.254.105:5965";
-    this.proxyAgent = new HttpsProxyAgent(proxyUrl);
-    console.log("🌐 Using proxy: 82.22.254.105:5965");
+  async initializeWebshareProxy(): Promise<void> {
+    if (!this.webshareService) {
+      try {
+        console.log("🔐 Fetching Webshare API token from Secret Manager...");
+        const apiToken = await this.secretsManager.getWebshareApiToken();
+        this.webshareService = new WebshareProxyService(apiToken);
+        console.log("✅ Webshare service initialized with token from Secret Manager");
+      } catch (error) {
+        console.error("❌ Failed to get Webshare API token from Secret Manager:", error);
+        throw error;
+      }
+    }
+
+    try {
+      console.log("🔄 Fetching fresh Bulgarian proxies from Webshare...");
+      const bulgarians =
+        await this.webshareService.getBulgarianProxies("direct");
+
+      if (bulgarians.length === 0) {
+        console.error("❌ No Bulgarian proxies available from Webshare");
+        throw new Error("No Bulgarian proxies available");
+      }
+
+      this.currentProxy =
+        this.webshareService.getRandomBulgarianProxy(bulgarians) || undefined;
+      if (!this.currentProxy) {
+        console.error("❌ Failed to get a random Bulgarian proxy");
+        throw new Error("Failed to get Bulgarian proxy");
+      }
+      
+      const newProxyUrl = this.webshareService.formatProxyUrl(
+        this.currentProxy,
+      );
+      this.proxyAgent = new HttpsProxyAgent(newProxyUrl);
+      console.log(
+        `🇧🇬 Using fresh Bulgarian proxy: ${this.currentProxy.proxy_address}:${this.currentProxy.port} (${this.currentProxy.city_name})`,
+      );
+    } catch (error) {
+      console.error(
+        "❌ Failed to fetch Webshare proxies:",
+        error,
+      );
+      throw error;
+    }
   }
 
   extractBrochureId(brochureUrl: string): string {
@@ -63,6 +115,10 @@ export class BroshuraBgCrawler {
 
   async fetchMainPage(): Promise<BrochureInfo> {
     console.log("Fetching main page:", this.startLink);
+    if (!this.proxyAgent) {
+      throw new Error("Proxy agent not initialized. Call initializeWebshareProxy() first.");
+    }
+    
     const response = await fetch(this.startLink, {
       agent: this.proxyAgent as any,
       headers: this.defaultHeaders,
@@ -80,6 +136,27 @@ export class BroshuraBgCrawler {
     const dateTimeAttr = dateTimeElement.attr("datetime");
 
     if (!dateTimeAttr) {
+      console.log("🔍 Debugging: Could not find valid-to date. Searching for alternatives...");
+      
+      // Debug: Look for any time elements
+      const allTimeElements = $("time[datetime]");
+      console.log(`Found ${allTimeElements.length} time elements with datetime attribute`);
+      
+      allTimeElements.each((i, el) => {
+        const datetime = $(el).attr("datetime");
+        const text = $(el).text().trim();
+        const parent = $(el).parent().prop("tagName");
+        console.log(`Time ${i}: datetime="${datetime}", text="${text}", parent="${parent}"`);
+      });
+      
+      // Look for ul.list-offer structure
+      const listOffers = $("ul.list-offer");
+      console.log(`Found ${listOffers.length} ul.list-offer elements`);
+      
+      if (listOffers.length > 0) {
+        console.log("List offer content:", listOffers.first().html());
+      }
+      
       throw new Error("Could not find valid-to date");
     }
 
@@ -110,6 +187,10 @@ export class BroshuraBgCrawler {
 
   async extractImageBaseUrl(brochureUrl: string): Promise<string> {
     console.log("Fetching brochure page:", brochureUrl);
+    if (!this.proxyAgent) {
+      throw new Error("Proxy agent not initialized. Call initializeWebshareProxy() first.");
+    }
+    
     const response = await fetch(brochureUrl, {
       agent: this.proxyAgent as any,
       headers: this.defaultHeaders,
@@ -143,6 +224,10 @@ export class BroshuraBgCrawler {
 
   async fetchImageBuffer(url: string): Promise<Buffer | null> {
     try {
+      if (!this.proxyAgent) {
+        throw new Error("Proxy agent not initialized. Call initializeWebshareProxy() first.");
+      }
+      
       const response = await fetch(url, {
         agent: this.proxyAgent as any,
         headers: {
@@ -340,6 +425,9 @@ export class BroshuraBgCrawler {
         `🚀 Starting ${this.config.storeId} crawler with cloud storage...`,
       );
 
+      // Initialize Webshare proxy first
+      await this.initializeWebshareProxy();
+
       const brochureInfo = await this.fetchMainPage();
       const brochureId = this.config.baseIndex!;
 
@@ -426,6 +514,9 @@ export class BroshuraBgCrawler {
   async crawlAndSaveLocally(): Promise<string> {
     try {
       console.log(`🚀 Starting ${this.config.storeId} crawler...`);
+
+      // Initialize Webshare proxy first
+      await this.initializeWebshareProxy();
 
       // Step 1: Fetch main page and extract brochure info
       const brochureInfo = await this.fetchMainPage();
