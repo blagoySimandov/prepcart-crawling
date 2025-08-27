@@ -2,6 +2,7 @@ export enum BrochureStore {
   KAUFLAND = "KAUFLAND",
   LIDL = "LIDL",
   BILLA = "BILLA",
+  CBA = "CBA",
 }
 
 export const BROCHURE_HREF_PREFIXES: Record<BrochureStore, string> = {
@@ -10,6 +11,8 @@ export const BROCHURE_HREF_PREFIXES: Record<BrochureStore, string> = {
   [BrochureStore.LIDL]: "https://katalozi-bg.info/catalogs/promo-katalog-Lidl/",
   [BrochureStore.BILLA]:
     "https://katalozi-bg.info/catalogs/promo-katalog-Billa/",
+  [BrochureStore.CBA]:
+    "https://katalozi-bg.info/catalogs/promo-katalog-CBAKome/",
 };
 
 export enum City {

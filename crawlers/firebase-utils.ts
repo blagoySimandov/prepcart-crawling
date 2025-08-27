@@ -34,12 +34,10 @@ const commands: UtilityCommand[] = [
           console.log(`📋 Details:`);
           console.log(`   Store: ${record.storeId}`);
           console.log(`   Country: ${record.country}`);
+          console.log(`   Cities: ${record.cityIds.join(', ')}`);
           console.log(`   Crawled: ${record.crawledAt.toISOString()}`);
-          console.log(
-            `   Valid: ${record.startDate.toDateString()} - ${record.endDate.toDateString()}`
-          );
           console.log(`   Images: ${record.imageCount || "N/A"}`);
-          console.log(`   Local file: ${record.filename || "N/A"}`);
+          console.log(`   Filename: ${record.filename}`);
           console.log(`   Cloud path: ${record.cloudStoragePath || "N/A"}`);
         }
       } else {
@@ -83,11 +81,10 @@ const commands: UtilityCommand[] = [
       console.log(`✅ Found ${records.length} brochures:`);
       records.forEach((record, index) => {
         console.log(`\n${index + 1}. Brochure ID: ${record.brochureId}`);
+        console.log(`   Cities: ${record.cityIds.join(', ')}`);
         console.log(`   Crawled: ${record.crawledAt.toISOString()}`);
-        console.log(
-          `   Valid: ${record.startDate.toDateString()} - ${record.endDate.toDateString()}`
-        );
         console.log(`   Images: ${record.imageCount || "N/A"}`);
+        console.log(`   Filename: ${record.filename}`);
         if (record.cloudStoragePath) {
           console.log(`   Cloud: ${record.cloudStoragePath}`);
         }

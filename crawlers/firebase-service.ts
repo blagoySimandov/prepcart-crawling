@@ -15,10 +15,9 @@ export interface BrochureRecord {
   brochureId: string;
   storeId: string;
   country: string;
+  cityIds: string[]; // Changed from cityId to cityIds to support multiple cities
   crawledAt: Date;
-  startDate: Date;
-  endDate: Date;
-  filename?: string;
+  filename: string; // UUID-based filename, now required
   cloudStoragePath?: string;
   imageCount?: number;
 }
@@ -66,9 +65,8 @@ export class FirebaseBrochureService {
         brochureId: data.brochureId,
         storeId: data.storeId,
         country: data.country,
+        cityIds: data.cityIds || [data.cityId], // Support both old and new format
         crawledAt: data.crawledAt.toDate(),
-        startDate: data.startDate.toDate(),
-        endDate: data.endDate.toDate(),
         filename: data.filename,
         cloudStoragePath: data.cloudStoragePath,
         imageCount: data.imageCount,
@@ -84,14 +82,13 @@ export class FirebaseBrochureService {
    */
   async storeBrochureRecord(record: BrochureRecord): Promise<void> {
     try {
-      const data: Required<BrochureRecord> = {
+      const data = {
         brochureId: record.brochureId,
         storeId: record.storeId,
         country: record.country,
+        cityIds: record.cityIds,
         crawledAt: record.crawledAt,
-        startDate: record.startDate,
-        endDate: record.endDate,
-        filename: record.filename || "",
+        filename: record.filename,
         cloudStoragePath: record.cloudStoragePath || "",
         imageCount: record.imageCount || 0,
       };
@@ -105,13 +102,14 @@ export class FirebaseBrochureService {
     }
   }
 
+
   /**
    * Get all brochure records for a specific store and country
    */
   async getBrochuresByStore(
     storeId: string,
     country: string,
-    limit: number = 50
+    limit: number = 50,
   ): Promise<BrochureRecord[]> {
     try {
       const snapshot = await db
@@ -128,9 +126,8 @@ export class FirebaseBrochureService {
           brochureId: data.brochureId,
           storeId: data.storeId,
           country: data.country,
+          cityIds: data.cityIds || [data.cityId], // Support both old and new format
           crawledAt: data.crawledAt.toDate(),
-          startDate: data.startDate.toDate(),
-          endDate: data.endDate.toDate(),
           filename: data.filename,
           cloudStoragePath: data.cloudStoragePath,
           imageCount: data.imageCount,

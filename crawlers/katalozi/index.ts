@@ -3,6 +3,7 @@ import PDFDocument from "pdfkit";
 import * as fs from "fs";
 import * as path from "path";
 import { Writable } from "stream";
+import { randomUUID } from "crypto";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import {
   firebaseBrochureService,
@@ -25,8 +26,11 @@ import { BUCKET_NAME } from "../constants.js";
 
 const STOREID_TO_COUNTRY: Record<string, string> = {
   kaufland: "bulgaria",
+  "kaufland-bg": "bulgaria",
+  "lidl-bg": "bulgaria",
   lidl: "bulgaria",
   billa: "bulgaria",
+  "cba-bg": "bulgaria",
 };
 
 export class KataloziCrawler {
@@ -56,89 +60,36 @@ export class KataloziCrawler {
     };
   }
 
-  async startWithCity(
-    city: City,
+  async startWithCities(
+    cities: City[],
     store: BrochureStore,
     storeInCloud?: boolean,
   ): Promise<void> {
     try {
-      // Auto-detect environment if not explicitly set
-      const shouldStoreInCloud = storeInCloud ?? (process.env.NODE_ENV === 'production');
-      console.log(`🏙️ Starting crawler for city: ${city}, store: ${store}`);
-      console.log(`📁 Storage mode: ${shouldStoreInCloud ? 'Cloud' : 'Local'} (NODE_ENV: ${process.env.NODE_ENV || 'development'})`);
-
+      const shouldStoreInCloud = this.determineStorageMode(storeInCloud);
+      this.logCrawlerStart(cities, store, shouldStoreInCloud);
+      
       await this.initializeWebshareProxy();
-
-      const response = await this.visitStartUrlForCity(city);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const html = await response.text();
-      const brochureIds = this.extractBrochureIds(html, store);
-
-      if (brochureIds.length === 0) {
-        console.log(`❌ No brochure IDs found for ${store} in ${city}`);
+      
+      const brochureMapping = await this.collectBrochuresFromCities(cities, store);
+      if (brochureMapping.uniqueIds.length === 0) {
+        console.log(`❌ No brochure IDs found for ${store} in any cities`);
         return;
       }
-
+      
+      this.logBrochureSummary(brochureMapping, cities.length);
+      
+      await this.processBrochures(brochureMapping, shouldStoreInCloud);
+      
       console.log(
-        `📋 Found ${brochureIds.length} brochure IDs for ${store}:`,
-        brochureIds,
-      );
-
-      for (const brochureId of brochureIds) {
-        try {
-          console.log(`\n📖 Processing brochure ${brochureId}...`);
-
-          if (await this.checkIfCrawled(brochureId)) {
-            console.log(`⚠️ Skipping brochure ${brochureId} - already crawled`);
-            continue;
-          }
-
-          const pdfBuffer = await this.generatePdfFromBrochureId(brochureId);
-
-          let storagePath: string;
-          let filename: string;
-
-          if (shouldStoreInCloud) {
-            console.log(`☁️ Storing brochure ${brochureId} in cloud (production mode)`);
-            const cloudPath = await this.storeInCloud(pdfBuffer, brochureId);
-            filename = await this.storeLocally(pdfBuffer, brochureId);
-            storagePath = cloudPath;
-          } else {
-            console.log(`💾 Storing brochure ${brochureId} locally (development mode)`);
-            filename = await this.storeLocally(pdfBuffer, brochureId);
-            storagePath = filename;
-          }
-
-          const record: BrochureRecord = {
-            brochureId,
-            storeId: this.config.storeId,
-            country: STOREID_TO_COUNTRY[this.config.storeId],
-            crawledAt: new Date(),
-            startDate: new Date(),
-            endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-            filename,
-            cloudStoragePath: shouldStoreInCloud ? storagePath : undefined,
-          };
-
-          await firebaseBrochureService.storeBrochureRecord(record);
-          console.log(`✅ Brochure ${brochureId} processed successfully`);
-        } catch (error) {
-          console.error(`❌ Error processing brochure ${brochureId}:`, error);
-          // Continue with next brochure instead of stopping
-        }
-      }
-
-      console.log(
-        `\n🎉 Completed processing ${brochureIds.length} brochures for ${store} in ${city}`,
+        `\n🎉 Completed processing ${brochureMapping.uniqueIds.length} unique brochures for ${store} across cities: ${cities.join(", ")}`,
       );
     } catch (error) {
-      console.error(`❌ Error in startWithCity for ${city}, ${store}:`, error);
+      console.error(`❌ Error in startWithCities for ${cities.join(", ")}, ${store}:`, error);
       throw error;
     }
   }
+
 
   /**
    * Generates a PDF from a brochure ID by fetching landscape images
@@ -182,6 +133,46 @@ export class KataloziCrawler {
 
     console.log(`📚 Found ${images.length} pages for brochure ${brochureId}`);
     return await this.createPdfFromImages(images);
+  }
+
+  /**
+   * Gets the image count for a brochure by counting available pages
+   * @param brochureId - The brochure ID to count images for
+   * @returns Number of images/pages in the brochure
+   */
+  async getImageCountForBrochure(brochureId: string): Promise<number> {
+    let pageNumber = 1;
+    let consecutiveErrors = 0;
+    const maxConsecutiveErrors = 3;
+    let imageCount = 0;
+
+    while (consecutiveErrors < maxConsecutiveErrors) {
+      const imageUrl = `https://katalozi-bg.info/catalogs/${brochureId}/landscape/${pageNumber}.jpg`;
+
+      try {
+        const response = await fetch(imageUrl, {
+          agent: this.proxyAgent as any,
+          method: "HEAD", // Only check if the image exists, don't download
+          headers: {
+            "User-Agent": this.defaultHeaders["User-Agent"],
+            Referer: "https://katalozi-bg.info/",
+          },
+        });
+
+        if (response.ok && !response.url.includes("/city/")) {
+          imageCount++;
+          consecutiveErrors = 0;
+        } else {
+          consecutiveErrors++;
+        }
+      } catch (error) {
+        consecutiveErrors++;
+      }
+
+      pageNumber++;
+    }
+
+    return imageCount;
   }
 
   async visitStartUrlForCity(city: City) {
@@ -266,10 +257,10 @@ export class KataloziCrawler {
         `📚 Brochure ${brochureId} has already been crawled on ${existingRecord.crawledAt.toISOString()}`,
       );
       console.log(
-        `   Store: ${existingRecord.storeId}, Country: ${existingRecord.country}`,
+        `   Store: ${existingRecord.storeId}, Country: ${existingRecord.country}, Cities: ${existingRecord.cityIds.join(", ")}`,
       );
       console.log(
-        `   Valid period: ${existingRecord.startDate.toDateString()} - ${existingRecord.endDate.toDateString()}`,
+        `   Filename: ${existingRecord.filename}, Images: ${existingRecord.imageCount || "N/A"}`,
       );
       if (existingRecord.cloudStoragePath) {
         console.log(`   Stored at: ${existingRecord.cloudStoragePath}`);
@@ -387,12 +378,12 @@ export class KataloziCrawler {
     });
   }
 
-  generateFilename(brochureId: string): string {
-    return `brochures/${this.config.storeId}_${brochureId}.pdf`;
+  generateFilename(uuid: string): string {
+    return `brochures/${uuid}.pdf`;
   }
 
-  async storeLocally(pdfBuffer: Buffer, brochureId: string): Promise<string> {
-    const filename = this.generateFilename(brochureId);
+  async storeLocally(pdfBuffer: Buffer, uuid: string): Promise<void> {
+    const filename = this.generateFilename(uuid);
 
     const brochuresDir = path.dirname(filename);
     if (!fs.existsSync(brochuresDir)) {
@@ -401,13 +392,12 @@ export class KataloziCrawler {
 
     fs.writeFileSync(filename, pdfBuffer);
     console.log(`💾 PDF saved locally: ${filename}`);
-    return filename;
   }
 
-  async storeInCloud(pdfBuffer: Buffer, brochureId: string): Promise<string> {
-    console.log(`☁️ Uploading brochure ${brochureId} to cloud storage...`);
+  async storeInCloud(pdfBuffer: Buffer, uuid: string): Promise<string> {
+    console.log(`☁️ Uploading brochure with UUID ${uuid} to cloud storage...`);
 
-    const filename = `${this.config.storeId}_${brochureId}.pdf`;
+    const filename = `${uuid}.pdf`;
     const cloudPath = await this.storeInGoogleCloud(pdfBuffer, filename);
 
     console.log(`☁️ PDF uploaded to: ${cloudPath}`);
@@ -440,5 +430,160 @@ export class KataloziCrawler {
       console.error("Error uploading PDF:", error);
       throw error;
     }
+  }
+
+  // Helper functions for better code organization
+  
+  private determineStorageMode(storeInCloud?: boolean): boolean {
+    return storeInCloud ?? process.env.NODE_ENV === "production";
+  }
+
+  private logCrawlerStart(cities: City[], store: BrochureStore, shouldStoreInCloud: boolean): void {
+    console.log(`🏙️ Starting crawler for cities: ${cities.join(", ")}, store: ${store}`);
+    console.log(`📁 Storage mode: ${shouldStoreInCloud ? "Cloud" : "Local"} (NODE_ENV: ${process.env.NODE_ENV || "development"})`);
+  }
+
+  private async collectBrochuresFromCities(
+    cities: City[], 
+    store: BrochureStore
+  ): Promise<{ cityMapping: Record<string, string[]>; uniqueIds: string[] }> {
+    const brochureToCity: Record<string, string[]> = {};
+    const allBrochureIds = new Set<string>();
+
+    for (const city of cities) {
+      const brochureIds = await this.getBrochureIdsForCity(city, store);
+      this.addBrochuresToMapping(brochureIds, city, brochureToCity, allBrochureIds);
+    }
+
+    return {
+      cityMapping: brochureToCity,
+      uniqueIds: Array.from(allBrochureIds)
+    };
+  }
+
+  private async getBrochureIdsForCity(city: City, store: BrochureStore): Promise<string[]> {
+    console.log(`\n🌐 Visiting ${city}...`);
+    
+    const response = await this.visitStartUrlForCity(city);
+    if (!response.ok) {
+      console.error(`❌ Failed to fetch ${city}: HTTP ${response.status}`);
+      return [];
+    }
+
+    const html = await response.text();
+    const brochureIds = this.extractBrochureIds(html, store);
+    
+    console.log(`📋 Found ${brochureIds.length} brochure IDs for ${store} in ${city}`);
+    return brochureIds;
+  }
+
+  private addBrochuresToMapping(
+    brochureIds: string[], 
+    city: City, 
+    brochureToCity: Record<string, string[]>, 
+    allBrochureIds: Set<string>
+  ): void {
+    for (const brochureId of brochureIds) {
+      if (!brochureToCity[brochureId]) {
+        brochureToCity[brochureId] = [];
+      }
+      if (!brochureToCity[brochureId].includes(city)) {
+        brochureToCity[brochureId].push(city);
+      }
+      allBrochureIds.add(brochureId);
+    }
+  }
+
+  private logBrochureSummary(
+    brochureMapping: { cityMapping: Record<string, string[]>; uniqueIds: string[] },
+    cityCount: number
+  ): void {
+    console.log(`\n📊 Summary: Found ${brochureMapping.uniqueIds.length} unique brochures across ${cityCount} cities`);
+    
+    for (const [brochureId, associatedCities] of Object.entries(brochureMapping.cityMapping)) {
+      console.log(`   ${brochureId}: ${associatedCities.join(", ")}`);
+    }
+  }
+
+  private async processBrochures(
+    brochureMapping: { cityMapping: Record<string, string[]>; uniqueIds: string[] },
+    shouldStoreInCloud: boolean
+  ): Promise<void> {
+    for (const brochureId of brochureMapping.uniqueIds) {
+      try {
+        const associatedCities = brochureMapping.cityMapping[brochureId];
+        await this.processSingleBrochure(brochureId, associatedCities, shouldStoreInCloud);
+      } catch (error) {
+        console.error(`❌ Error processing brochure ${brochureId}:`, error);
+        // Continue with next brochure instead of stopping
+      }
+    }
+  }
+
+  private async processSingleBrochure(
+    brochureId: string, 
+    associatedCities: string[], 
+    shouldStoreInCloud: boolean
+  ): Promise<void> {
+    console.log(`\n📖 Processing brochure ${brochureId} (cities: ${associatedCities.join(", ")})...`);
+
+    if (await this.checkIfCrawled(brochureId)) {
+      console.log(`⚠️ Skipping brochure ${brochureId} - already crawled`);
+      return;
+    }
+
+    const pdfData = await this.createBrochurePdf(brochureId);
+    const storagePaths = await this.storeBrochure(brochureId, pdfData, shouldStoreInCloud);
+    
+    const record = this.createBrochureRecord(brochureId, associatedCities, pdfData, storagePaths);
+    await firebaseBrochureService.storeBrochureRecord(record);
+    
+    console.log(`✅ Brochure ${brochureId} processed successfully`);
+  }
+
+  private async createBrochurePdf(brochureId: string): Promise<{ buffer: Buffer; imageCount: number; uuid: string }> {
+    const pdfBuffer = await this.generatePdfFromBrochureId(brochureId);
+    const imageCount = await this.getImageCountForBrochure(brochureId);
+    const uuid = randomUUID();
+    
+    return { buffer: pdfBuffer, imageCount, uuid };
+  }
+
+  private async storeBrochure(
+    brochureId: string,
+    pdfData: { buffer: Buffer; uuid: string },
+    shouldStoreInCloud: boolean
+  ): Promise<{ filename: string; cloudStoragePath?: string }> {
+    const filename = `${pdfData.uuid}.pdf`;
+    let cloudStoragePath: string | undefined;
+
+    if (shouldStoreInCloud) {
+      console.log(`☁️ Storing brochure ${brochureId} in cloud (production mode)`);
+      cloudStoragePath = await this.storeInCloud(pdfData.buffer, pdfData.uuid);
+      await this.storeLocally(pdfData.buffer, pdfData.uuid);
+    } else {
+      console.log(`💾 Storing brochure ${brochureId} locally (development mode)`);
+      await this.storeLocally(pdfData.buffer, pdfData.uuid);
+    }
+
+    return { filename, cloudStoragePath };
+  }
+
+  private createBrochureRecord(
+    brochureId: string,
+    associatedCities: string[],
+    pdfData: { imageCount: number },
+    storagePaths: { filename: string; cloudStoragePath?: string }
+  ): BrochureRecord {
+    return {
+      brochureId,
+      storeId: this.config.storeId,
+      country: STOREID_TO_COUNTRY[this.config.storeId],
+      cityIds: associatedCities,
+      crawledAt: new Date(),
+      filename: storagePaths.filename,
+      cloudStoragePath: storagePaths.cloudStoragePath,
+      imageCount: pdfData.imageCount,
+    };
   }
 }
