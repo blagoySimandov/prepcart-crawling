@@ -5,7 +5,7 @@
 CRAWLER ?= kaufland
 REGION ?= europe-west1
 PROJECT_ID ?= $(shell gcloud config get-value project 2>/dev/null)
-SCHEDULE ?= 0 9 * * 1 # Default: Weekly Monday 9 AM UTC
+SCHEDULE ?= 0 9 * * * # Default: Daily 9 AM UTC
 
 # Colors for output
 CYAN = \033[36m

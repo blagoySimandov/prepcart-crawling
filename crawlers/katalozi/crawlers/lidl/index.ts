@@ -23,7 +23,10 @@ export class LidlKataloziCrawler extends KataloziCrawler {
 async function main() {
   try {
     const crawler = new LidlKataloziCrawler();
-    await crawler.startWithCities([City.Sofia, City.Plovdiv], BrochureStore.LIDL);
+    await crawler.startWithCities(
+      [City.Sofia, City.Plovdiv],
+      BrochureStore.LIDL,
+    );
     console.log("✅ Crawler finished successfully");
     process.exit(0);
   } catch (error) {
