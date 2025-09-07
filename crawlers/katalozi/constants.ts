@@ -1,18 +1,9 @@
-export enum BrochureStore {
-  KAUFLAND = "KAUFLAND",
-  LIDL = "LIDL",
-  BILLA = "BILLA",
-  CBA = "CBA",
-}
-
-export const BROCHURE_HREF_PREFIXES: Record<BrochureStore, string> = {
-  [BrochureStore.KAUFLAND]:
-    "https://katalozi-bg.info/catalogs/promo-katalog-Kaufland/",
-  [BrochureStore.LIDL]: "https://katalozi-bg.info/catalogs/promo-katalog-Lidl/",
-  [BrochureStore.BILLA]:
-    "https://katalozi-bg.info/catalogs/promo-katalog-Billa/",
-  [BrochureStore.CBA]:
-    "https://katalozi-bg.info/catalogs/promo-katalog-CBAKome/",
+export const STOREID_TO_BROCHURE_PREFIX: Record<string, string> = {
+  "kaufland-bg": "https://katalozi-bg.info/catalogs/promo-katalog-Kaufland/",
+  "lidl-bg": "https://katalozi-bg.info/catalogs/promo-katalog-Lidl/",
+  "cba-bg": "https://katalozi-bg.info/catalogs/promo-katalog-CBAKome/",
+  "burleks-bg":
+    "https://katalozi-bg.info/catalogs/promo-katalog-Supermarkets-cba",
 };
 
 export enum City {

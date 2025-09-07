@@ -1,7 +1,6 @@
-import { City, BrochureStore } from "../../constants.js";
+import { City } from "../../constants.js";
 import { KataloziCrawler } from "../../index.js";
 import { KataloziCrawlerConfig } from "../../types.js";
-import { getApp } from "firebase-admin/app";
 
 export interface CbaKataloziCrawlerConfig {
   storeId: string;
@@ -24,24 +23,12 @@ export class CbaKataloziCrawler extends KataloziCrawler {
 async function main() {
   try {
     const crawler = new CbaKataloziCrawler();
-
-    await crawler.startWithCities([City.Sofia], BrochureStore.CBA);
-
+    await crawler.startWithCities([City.Sofia]);
     console.log("✅ Crawler finished successfully");
   } catch (error) {
     console.error("❌ Crawler failed:", error);
     throw error;
-  } finally {
-    // Close Firebase connection to allow process to exit
-    try {
-      const app = getApp();
-      await app.delete();
-      console.log("🔥 Firebase connection closed");
-    } catch (e) {
-      // App might not be initialized or already deleted
-    }
   }
 }
 
 await main();
-

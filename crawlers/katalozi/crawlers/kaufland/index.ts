@@ -1,4 +1,4 @@
-import { City, BrochureStore } from "../../constants.js";
+import { City } from "../../constants.js";
 import { KataloziCrawler } from "../../index.js";
 import { KataloziCrawlerConfig } from "../../types.js";
 
@@ -24,10 +24,13 @@ async function main() {
   try {
     const crawler = new KauflandKataloziCrawler();
 
-    await crawler.startWithCities(
-      [City.Sofia, City.Plovdiv, City.Varna, City.Burgas, City.Ruse],
-      BrochureStore.KAUFLAND,
-    );
+    await crawler.startWithCities([
+      City.Sofia,
+      City.Plovdiv,
+      City.Varna,
+      City.Burgas,
+      City.Ruse,
+    ]);
 
     console.log("✅ Crawler finished successfully");
     process.exit(0);

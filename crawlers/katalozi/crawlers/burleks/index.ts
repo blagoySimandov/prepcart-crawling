@@ -2,15 +2,15 @@ import { City } from "../../constants.js";
 import { KataloziCrawler } from "../../index.js";
 import { KataloziCrawlerConfig } from "../../types.js";
 
-export interface LidlKataloziCrawlerConfig {
+export interface BurleksKataloziCrawlerConfig {
   storeId: string;
   country: string;
   projectId?: string;
 }
-const STORE_ID = "lidl-bg";
+const STORE_ID = "burleks-bg";
 const PROJECT_ID = "prepcart-prod";
 
-export class LidlKataloziCrawler extends KataloziCrawler {
+export class BurleksKataloziCrawler extends KataloziCrawler {
   constructor() {
     const kataloziConfig: KataloziCrawlerConfig = {
       storeId: STORE_ID,
@@ -22,14 +22,21 @@ export class LidlKataloziCrawler extends KataloziCrawler {
 
 async function main() {
   try {
-    const crawler = new LidlKataloziCrawler();
-    await crawler.startWithCities([City.Sofia, City.Plovdiv]);
+    const crawler = new BurleksKataloziCrawler();
+    await crawler.startWithCities([
+      City.Sofia,
+      City.Plovdiv,
+      City.Varna,
+      City.Burgas,
+      City.Ruse,
+      City.StaraZagora,
+      City.Razgrad,
+    ]);
     console.log("✅ Crawler finished successfully");
-    process.exit(0);
   } catch (error) {
     console.error("❌ Crawler failed:", error);
-    process.exit(1);
+    throw error;
   }
 }
 
-main();
+await main();

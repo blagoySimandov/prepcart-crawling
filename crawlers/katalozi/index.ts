@@ -15,24 +15,13 @@ import {
 } from "../webshare-proxy-service.js";
 import { SecretsManager } from "../secrets-manager.js";
 import {
-  BrochureStore,
-  BROCHURE_HREF_PREFIXES,
+  STOREID_TO_BROCHURE_PREFIX,
   City,
   CITY_START_LINK_PREFIX,
 } from "./constants.js";
 import { KataloziCrawlerConfig, ImageData } from "./types.js";
 import { Storage } from "@google-cloud/storage";
-import { BUCKET_NAME } from "../constants.js";
-import { getApp } from "firebase-admin/app";
-
-const STOREID_TO_COUNTRY: Record<string, string> = {
-  kaufland: "bulgaria",
-  "kaufland-bg": "bulgaria",
-  "lidl-bg": "bulgaria",
-  lidl: "bulgaria",
-  billa: "bulgaria",
-  "cba-bg": "bulgaria",
-};
+import { BUCKET_NAME, STOREID_TO_COUNTRY } from "../constants.js";
 
 export class KataloziCrawler {
   protected config: KataloziCrawlerConfig;
@@ -61,23 +50,18 @@ export class KataloziCrawler {
     };
   }
 
-  async startWithCities(
-    cities: City[],
-    store: BrochureStore,
-    storeInCloud?: boolean,
-  ): Promise<void> {
+  async startWithCities(cities: City[], storeInCloud?: boolean): Promise<void> {
     try {
       const shouldStoreInCloud = this.determineStorageMode(storeInCloud);
-      this.logCrawlerStart(cities, store, shouldStoreInCloud);
+      this.logCrawlerStart(cities, shouldStoreInCloud);
 
       await this.initializeWebshareProxy();
 
-      const brochureMapping = await this.collectBrochuresFromCities(
-        cities,
-        store,
-      );
+      const brochureMapping = await this.collectBrochuresFromCities(cities);
       if (brochureMapping.uniqueIds.length === 0) {
-        console.log(`❌ No brochure IDs found for ${store} in any cities`);
+        console.log(
+          `❌ No brochure IDs found for ${this.config.storeId} in any cities`,
+        );
         return;
       }
 
@@ -86,17 +70,14 @@ export class KataloziCrawler {
       await this.processBrochures(brochureMapping, shouldStoreInCloud);
 
       console.log(
-        `\n🎉 Completed processing ${brochureMapping.uniqueIds.length} unique brochures for ${store} across cities: ${cities.join(", ")}`,
+        `\n🎉 Completed processing ${brochureMapping.uniqueIds.length} unique brochures for ${this.config.storeId} across cities: ${cities.join(", ")}`,
       );
     } catch (error) {
       console.error(
-        `❌ Error in startWithCities for ${cities.join(", ")}, ${store}:`,
+        `❌ Error in startWithCities for ${cities.join(", ")}, ${this.config.storeId}:`,
         error,
       );
       throw error;
-    } finally {
-      // Close Firebase connection to allow process to exit
-      await this.cleanup();
     }
   }
 
@@ -105,7 +86,9 @@ export class KataloziCrawler {
    * @param brochureId - The brochure ID to fetch images for
    * @returns Buffer containing the generated PDF
    */
-  async generatePdfFromBrochureId(brochureId: string): Promise<{ buffer: Buffer; imageCount: number }> {
+  async generatePdfFromBrochureId(
+    brochureId: string,
+  ): Promise<{ buffer: Buffer; imageCount: number }> {
     console.log(`📸 Fetching images for brochure ${brochureId}...`);
 
     const images: ImageData[] = [];
@@ -193,15 +176,16 @@ export class KataloziCrawler {
   }
 
   /**
-   * Extracts all brochure IDs from HTML for a specific store
+   * Extracts all brochure IDs from HTML for the configured store
    * @param html - The HTML content to search
-   * @param store - The store enum to get the href prefix for
    * @returns Array of brochure IDs found
    */
-  extractBrochureIds(html: string, store: BrochureStore): string[] {
-    const hrefPrefix = BROCHURE_HREF_PREFIXES[store];
+  extractBrochureIds(html: string): string[] {
+    const hrefPrefix = STOREID_TO_BROCHURE_PREFIX[this.config.storeId];
     if (!hrefPrefix) {
-      throw new Error(`No href prefix found for store: ${store}`);
+      throw new Error(
+        `No href prefix found for storeId: ${this.config.storeId}`,
+      );
     }
 
     const escapedPrefix = hrefPrefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -414,21 +398,6 @@ export class KataloziCrawler {
     return cloudPath;
   }
 
-  /**
-   * Cleanup method to properly close connections and allow process to exit
-   */
-  private async cleanup(): Promise<void> {
-    try {
-      // Close Firebase connection
-      const app = getApp();
-      await app.delete();
-      console.log("🔥 Firebase connection closed");
-    } catch (e) {
-      // App might not be initialized or already deleted
-      console.log("🔥 Firebase connection cleanup completed");
-    }
-  }
-
   private async storeInGoogleCloud(
     pdfBuffer: Buffer,
     filename: string,
@@ -463,13 +432,9 @@ export class KataloziCrawler {
     return storeInCloud ?? process.env.NODE_ENV === "production";
   }
 
-  private logCrawlerStart(
-    cities: City[],
-    store: BrochureStore,
-    shouldStoreInCloud: boolean,
-  ): void {
+  private logCrawlerStart(cities: City[], shouldStoreInCloud: boolean): void {
     console.log(
-      `🏙️ Starting crawler for cities: ${cities.join(", ")}, store: ${store}`,
+      `🏙️ Starting crawler for cities: ${cities.join(", ")}, store: ${this.config.storeId}`,
     );
     console.log(
       `📁 Storage mode: ${shouldStoreInCloud ? "Cloud" : "Local"} (NODE_ENV: ${process.env.NODE_ENV || "development"})`,
@@ -478,13 +443,12 @@ export class KataloziCrawler {
 
   private async collectBrochuresFromCities(
     cities: City[],
-    store: BrochureStore,
   ): Promise<{ cityMapping: Record<string, string[]>; uniqueIds: string[] }> {
     const brochureToCity: Record<string, string[]> = {};
     const allBrochureIds = new Set<string>();
 
     for (const city of cities) {
-      const brochureIds = await this.getBrochureIdsForCity(city, store);
+      const brochureIds = await this.getBrochureIdsForCity(city);
       this.addBrochuresToMapping(
         brochureIds,
         city,
@@ -499,10 +463,7 @@ export class KataloziCrawler {
     };
   }
 
-  private async getBrochureIdsForCity(
-    city: City,
-    store: BrochureStore,
-  ): Promise<string[]> {
+  private async getBrochureIdsForCity(city: City): Promise<string[]> {
     console.log(`\n🌐 Visiting ${city}...`);
 
     const response = await this.visitStartUrlForCity(city);
@@ -512,10 +473,10 @@ export class KataloziCrawler {
     }
 
     const html = await response.text();
-    const brochureIds = this.extractBrochureIds(html, store);
+    const brochureIds = this.extractBrochureIds(html);
 
     console.log(
-      `📋 Found ${brochureIds.length} brochure IDs for ${store} in ${city}`,
+      `📋 Found ${brochureIds.length} brochure IDs for ${this.config.storeId} in ${city}`,
     );
     return brochureIds;
   }
@@ -612,7 +573,8 @@ export class KataloziCrawler {
   private async createBrochurePdf(
     brochureId: string,
   ): Promise<{ buffer: Buffer; imageCount: number; uuid: string }> {
-    const { buffer: pdfBuffer, imageCount } = await this.generatePdfFromBrochureId(brochureId);
+    const { buffer: pdfBuffer, imageCount } =
+      await this.generatePdfFromBrochureId(brochureId);
     const uuid = randomUUID();
 
     return { buffer: pdfBuffer, imageCount, uuid };
