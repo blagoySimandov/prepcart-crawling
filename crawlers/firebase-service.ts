@@ -1,9 +1,7 @@
 import { initializeApp, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
-// Initialize Firebase Admin SDK
 if (getApps().length === 0) {
-  // Initialize with Application Default Credentials for Google Cloud environments
   initializeApp({
     projectId: process.env.GOOGLE_CLOUD_PROJECT || "prepcart-prod",
   });
@@ -15,9 +13,9 @@ export interface BrochureRecord {
   brochureId: string;
   storeId: string;
   country: string;
-  cityIds: string[]; // Changed from cityId to cityIds to support multiple cities
+  cityIds: string[];
   crawledAt: Date;
-  filename: string; // UUID-based filename, now required
+  filename: string;
   cloudStoragePath?: string;
   imageCount?: number;
 }
@@ -102,7 +100,6 @@ export class FirebaseBrochureService {
     }
   }
 
-
   /**
    * Get all brochure records for a specific store and country
    */
@@ -136,6 +133,34 @@ export class FirebaseBrochureService {
     } catch (error) {
       console.error("Error getting brochures by store:", error);
       return [];
+    }
+  }
+
+  /**
+   * Update brochure record with partial data
+   */
+  async updateBrochureRecord(
+    brochureId: string,
+    updates: Partial<BrochureRecord>,
+  ): Promise<void> {
+    try {
+      const snapshot = await db
+        .collection(this.collection)
+        .where("brochureId", "==", brochureId)
+        .limit(1)
+        .get();
+
+      if (snapshot.empty) {
+        throw new Error(`No brochure record found for ID: ${brochureId}`);
+      }
+
+      const doc = snapshot.docs[0];
+      await doc.ref.update(updates);
+
+      console.log(`✅ Brochure record updated for ID: ${brochureId}`);
+    } catch (error) {
+      console.error("Error updating brochure record:", error);
+      throw error;
     }
   }
 

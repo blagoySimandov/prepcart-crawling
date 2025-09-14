@@ -21,20 +21,18 @@ const commands: UtilityCommand[] = [
       const brochureId = args[0];
       console.log(`🔍 Checking brochure ID: ${brochureId}`);
 
-      const exists = await firebaseBrochureService.isBrochureCrawled(
-        brochureId
-      );
+      const exists =
+        await firebaseBrochureService.isBrochureCrawled(brochureId);
       if (exists) {
         console.log(`✅ Brochure ${brochureId} has been crawled`);
 
-        const record = await firebaseBrochureService.getBrochureRecord(
-          brochureId
-        );
+        const record =
+          await firebaseBrochureService.getBrochureRecord(brochureId);
         if (record) {
           console.log(`📋 Details:`);
           console.log(`   Store: ${record.storeId}`);
           console.log(`   Country: ${record.country}`);
-          console.log(`   Cities: ${record.cityIds.join(', ')}`);
+          console.log(`   Cities: ${record.cityIds.join(", ")}`);
           console.log(`   Crawled: ${record.crawledAt.toISOString()}`);
           console.log(`   Images: ${record.imageCount || "N/A"}`);
           console.log(`   Filename: ${record.filename}`);
@@ -51,10 +49,10 @@ const commands: UtilityCommand[] = [
     action: async (args: string[]) => {
       if (args.length < 2) {
         console.log(
-          "Usage: tsx firebase-utils.ts list <store-id> <country> [limit]"
+          "Usage: tsx firebase-utils.ts list <store-id> <country> [limit]",
         );
         console.log(
-          "Example: tsx firebase-utils.ts list fantastico-bg bulgaria 10"
+          "Example: tsx firebase-utils.ts list fantastico-bg bulgaria 10",
         );
         return;
       }
@@ -64,13 +62,13 @@ const commands: UtilityCommand[] = [
       const limit = args[2] ? parseInt(args[2]) : 10;
 
       console.log(
-        `📋 Listing brochures for ${storeId} in ${country} (limit: ${limit})`
+        `📋 Listing brochures for ${storeId} in ${country} (limit: ${limit})`,
       );
 
       const records = await firebaseBrochureService.getBrochuresByStore(
         storeId,
         country,
-        limit
+        limit,
       );
 
       if (records.length === 0) {
@@ -81,7 +79,7 @@ const commands: UtilityCommand[] = [
       console.log(`✅ Found ${records.length} brochures:`);
       records.forEach((record, index) => {
         console.log(`\n${index + 1}. Brochure ID: ${record.brochureId}`);
-        console.log(`   Cities: ${record.cityIds.join(', ')}`);
+        console.log(`   Cities: ${record.cityIds.join(", ")}`);
         console.log(`   Crawled: ${record.crawledAt.toISOString()}`);
         console.log(`   Images: ${record.imageCount || "N/A"}`);
         console.log(`   Filename: ${record.filename}`);
@@ -103,14 +101,13 @@ const commands: UtilityCommand[] = [
       const brochureId = args[0];
       console.log(`⚠️ Deleting brochure record: ${brochureId}`);
 
-      const result = await firebaseBrochureService.deleteBrochureRecord(
-        brochureId
-      );
+      const result =
+        await firebaseBrochureService.deleteBrochureRecord(brochureId);
       if (result) {
         console.log(`✅ Brochure record ${brochureId} deleted successfully`);
       } else {
         console.log(
-          `❌ Failed to delete brochure record ${brochureId} (not found or error)`
+          `❌ Failed to delete brochure record ${brochureId} (not found or error)`,
         );
       }
     },
@@ -129,7 +126,7 @@ async function main() {
     console.log("\nExamples:");
     console.log("  tsx crawlers/firebase-utils.ts check 5550356");
     console.log(
-      "  tsx crawlers/firebase-utils.ts list fantastico-bg bulgaria 5"
+      "  tsx crawlers/firebase-utils.ts list fantastico-bg bulgaria 5",
     );
     console.log("  tsx crawlers/firebase-utils.ts delete 5550356");
     return;
@@ -143,7 +140,7 @@ async function main() {
     console.log(`❌ Unknown command: ${commandName}`);
     console.log(
       "Available commands:",
-      commands.map((cmd) => cmd.name).join(", ")
+      commands.map((cmd) => cmd.name).join(", "),
     );
     return;
   }

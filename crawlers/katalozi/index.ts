@@ -73,10 +73,9 @@ export class KataloziCrawler {
         `\n🎉 Completed processing ${brochureMapping.uniqueIds.length} unique brochures for ${this.config.storeId} across cities: ${cities.join(", ")}`,
       );
     } catch (error) {
-      console.error(
-        `❌ Error in startWithCities for ${cities.join(", ")}, ${this.config.storeId}:`,
-        error,
-      );
+      const errorMessage = `Error in startWithCities for ${cities.join(", ")}, ${this.config.storeId}: ${error}`;
+      console.error(`❌ ${errorMessage}`);
+      await this.notifyError(errorMessage);
       throw error;
     }
   }
@@ -205,10 +204,9 @@ export class KataloziCrawler {
           "✅ Webshare service initialized with token from Secret Manager",
         );
       } catch (error) {
-        console.error(
-          "❌ Failed to get Webshare API token from Secret Manager:",
-          error,
-        );
+        const errorMessage = `Failed to get Webshare API token from Secret Manager: ${error}`;
+        console.error(`❌ ${errorMessage}`);
+        await this.notifyError(errorMessage);
         throw error;
       }
     }
@@ -238,7 +236,9 @@ export class KataloziCrawler {
         `🇧🇬 Using fresh Bulgarian proxy: ${this.currentProxy.proxy_address}:${this.currentProxy.port} (${this.currentProxy.city_name})`,
       );
     } catch (error) {
-      console.error("❌ Failed to fetch Webshare proxies:", error);
+      const errorMessage = `Failed to fetch Webshare proxies: ${error}`;
+      console.error(`❌ ${errorMessage}`);
+      await this.notifyError(errorMessage);
       throw error;
     }
   }
@@ -532,7 +532,9 @@ export class KataloziCrawler {
           shouldStoreInCloud,
         );
       } catch (error) {
-        console.error(`❌ Error processing brochure ${brochureId}:`, error);
+        const errorMessage = `Error processing brochure ${brochureId}: ${error}`;
+        console.error(`❌ ${errorMessage}`);
+        await this.notifyError(errorMessage);
         // Continue with next brochure instead of stopping
       }
     }
@@ -553,19 +555,29 @@ export class KataloziCrawler {
     }
 
     const pdfData = await this.createBrochurePdf(brochureId);
+    
+    // First, create and store the Firestore record without cloudStoragePath
+    const initialRecord = this.createBrochureRecord(
+      brochureId,
+      associatedCities,
+      pdfData,
+      { filename: `${pdfData.uuid}.pdf` },
+    );
+    await firebaseBrochureService.storeBrochureRecord(initialRecord);
+    console.log(`📝 Firestore record created for brochure ${brochureId}`);
+
+    // Then, upload to storage and update the record if needed
     const storagePaths = await this.storeBrochure(
       brochureId,
       pdfData,
       shouldStoreInCloud,
     );
 
-    const record = this.createBrochureRecord(
-      brochureId,
-      associatedCities,
-      pdfData,
-      storagePaths,
-    );
-    await firebaseBrochureService.storeBrochureRecord(record);
+    // Update the Firestore record with cloud storage path if it was uploaded
+    if (storagePaths.cloudStoragePath) {
+      await this.updateBrochureRecordWithCloudPath(brochureId, storagePaths.cloudStoragePath);
+      console.log(`☁️ Firestore record updated with cloud storage path for brochure ${brochureId}`);
+    }
 
     console.log(`✅ Brochure ${brochureId} processed successfully`);
   }
@@ -617,8 +629,44 @@ export class KataloziCrawler {
       cityIds: associatedCities,
       crawledAt: new Date(),
       filename: storagePaths.filename,
-      cloudStoragePath: storagePaths.cloudStoragePath,
+      cloudStoragePath: storagePaths.cloudStoragePath || undefined,
       imageCount: pdfData.imageCount,
     };
+  }
+
+  private async updateBrochureRecordWithCloudPath(
+    brochureId: string,
+    cloudStoragePath: string,
+  ): Promise<void> {
+    await firebaseBrochureService.updateBrochureRecord(brochureId, {
+      cloudStoragePath,
+    });
+  }
+
+  /**
+   * Sends error notification to webhook for serious errors
+   */
+  private async notifyError(errorMessage: string): Promise<void> {
+    const webhookUrl = "https://n8n.prepcart.it.com/webhook-test/ad1fe76e-95e1-4fa5-a7ea-0066dcad8dc5";
+    
+    try {
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          error: errorMessage
+        }),
+      });
+
+      if (response.ok) {
+        console.log("📡 Error notification sent successfully");
+      } else {
+        console.error(`❌ Failed to send error notification: HTTP ${response.status}`);
+      }
+    } catch (notificationError) {
+      console.error("❌ Error sending notification:", notificationError);
+    }
   }
 }
