@@ -555,7 +555,7 @@ export class KataloziCrawler {
     }
 
     const pdfData = await this.createBrochurePdf(brochureId);
-    
+
     // First, create and store the Firestore record without cloudStoragePath
     const initialRecord = this.createBrochureRecord(
       brochureId,
@@ -575,8 +575,13 @@ export class KataloziCrawler {
 
     // Update the Firestore record with cloud storage path if it was uploaded
     if (storagePaths.cloudStoragePath) {
-      await this.updateBrochureRecordWithCloudPath(brochureId, storagePaths.cloudStoragePath);
-      console.log(`☁️ Firestore record updated with cloud storage path for brochure ${brochureId}`);
+      await this.updateBrochureRecordWithCloudPath(
+        brochureId,
+        storagePaths.cloudStoragePath,
+      );
+      console.log(
+        `☁️ Firestore record updated with cloud storage path for brochure ${brochureId}`,
+      );
     }
 
     console.log(`✅ Brochure ${brochureId} processed successfully`);
@@ -647,8 +652,9 @@ export class KataloziCrawler {
    * Sends error notification to webhook for serious errors
    */
   private async notifyError(errorMessage: string): Promise<void> {
-    const webhookUrl = "https://n8n.prepcart.it.com/webhook-test/ad1fe76e-95e1-4fa5-a7ea-0066dcad8dc5";
-    
+    const webhookUrl =
+      "https://n8n.prepcart.it.com/webhook/ad1fe76e-95e1-4fa5-a7ea-0066dcad8dc5";
+
     try {
       const response = await fetch(webhookUrl, {
         method: "POST",
@@ -656,14 +662,16 @@ export class KataloziCrawler {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          error: errorMessage
+          error: errorMessage,
         }),
       });
 
       if (response.ok) {
         console.log("📡 Error notification sent successfully");
       } else {
-        console.error(`❌ Failed to send error notification: HTTP ${response.status}`);
+        console.error(
+          `❌ Failed to send error notification: HTTP ${response.status}`,
+        );
       }
     } catch (notificationError) {
       console.error("❌ Error sending notification:", notificationError);
