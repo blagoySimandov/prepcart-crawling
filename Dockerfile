@@ -15,4 +15,4 @@ ENV NODE_ENV=production
 ARG CRAWLER_NAME=unnamed-crawler
 ENV CRAWLER_NAME=${CRAWLER_NAME}
 
-CMD npx tsx crawlers/${CRAWLER_NAME}/index.ts
+CMD npm run start:subcrawler --crawler=${CRAWLER_NAME}

@@ -6,18 +6,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:bila-bulgaria": "tsx crawlers/bila-bulgaria/index.ts",
-    "dev:bila-bulgaria": "tsx watch crawlers/bila-bulgaria/index.ts",
-    "start:lidl-bulgaria": "tsx crawlers/lidl-bulgaria/index.ts",
-    "dev:lidl-bulgaria": "tsx watch crawlers/lidl-bulgaria/index.ts",
-    "start:fantastico-bulgaria": "tsx crawlers/fantastico-bulgaria/index.ts",
-    "dev:fantastico-bulgaria": "tsx watch crawlers/fantastico-bulgaria/index.ts",
-    "start:kaufland-bulgaria": "tsx crawlers/kaufland-bulgaria/index.ts",
-    "dev:kaufland-bulgaria": "tsx watch crawlers/kaufland-bulgaria/index.ts",
-    "start:cba-bulgaria": "tsx crawlers/cba-bulgaria/index.ts",
-    "dev:cba-bulgaria": "tsx watch crawlers/cba-bulgaria/index.ts",
-    "start:tmarket-bulgaria": "tsx crawlers/t-market/index.ts",
-    "dev:tmarket-bulgaria": "tsx watch crawlers/t-market/index.ts",
+    "start:katalozi": "tsx crawlers/katalozi/index.ts",
+    "dev:katalozi": "tsx watch crawlers/katalozi/index.ts",
+    "start:subcrawler": "tsx  crawlers/katalozi/crawlers/$npm_config_crawler/index.ts",
     "firebase-utils": "tsx crawlers/firebase-utils.ts"
   },
   "keywords": [
@@ -29,9 +20,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/secret-manager": "^6.1.0",
     "@google-cloud/storage": "^7.16.0",
     "@mendable/firecrawl-js": "^1.29.1",
+    "axios": "^1.7.7",
     "cheerio": "^1.1.0",
+    "express": "^4.21.0",
     "firebase-admin": "^13.4.0",
     "firecrawl": "^1.29.0",
     "jsdom": "^26.1.0",
@@ -39,6 +33,7 @@
     "pdfkit": "^0.15.0"
   },
   "devDependencies": {
+    "@types/express": "^5.0.0",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^24.0.8",
     "@types/pdfkit": "^0.13.4",

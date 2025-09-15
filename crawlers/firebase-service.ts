@@ -1,9 +1,7 @@
 import { initializeApp, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
-// Initialize Firebase Admin SDK
 if (getApps().length === 0) {
-  // Initialize with Application Default Credentials for Google Cloud environments
   initializeApp({
     projectId: process.env.GOOGLE_CLOUD_PROJECT || "prepcart-prod",
   });
@@ -15,10 +13,9 @@ export interface BrochureRecord {
   brochureId: string;
   storeId: string;
   country: string;
+  cityIds: string[];
   crawledAt: Date;
-  startDate: Date;
-  endDate: Date;
-  filename?: string;
+  filename: string;
   cloudStoragePath?: string;
   imageCount?: number;
 }
@@ -66,9 +63,8 @@ export class FirebaseBrochureService {
         brochureId: data.brochureId,
         storeId: data.storeId,
         country: data.country,
+        cityIds: data.cityIds || [data.cityId], // Support both old and new format
         crawledAt: data.crawledAt.toDate(),
-        startDate: data.startDate.toDate(),
-        endDate: data.endDate.toDate(),
         filename: data.filename,
         cloudStoragePath: data.cloudStoragePath,
         imageCount: data.imageCount,
@@ -84,14 +80,13 @@ export class FirebaseBrochureService {
    */
   async storeBrochureRecord(record: BrochureRecord): Promise<void> {
     try {
-      const data: Required<BrochureRecord> = {
+      const data = {
         brochureId: record.brochureId,
         storeId: record.storeId,
         country: record.country,
+        cityIds: record.cityIds,
         crawledAt: record.crawledAt,
-        startDate: record.startDate,
-        endDate: record.endDate,
-        filename: record.filename || "",
+        filename: record.filename,
         cloudStoragePath: record.cloudStoragePath || "",
         imageCount: record.imageCount || 0,
       };
@@ -111,7 +106,7 @@ export class FirebaseBrochureService {
   async getBrochuresByStore(
     storeId: string,
     country: string,
-    limit: number = 50
+    limit: number = 50,
   ): Promise<BrochureRecord[]> {
     try {
       const snapshot = await db
@@ -128,9 +123,8 @@ export class FirebaseBrochureService {
           brochureId: data.brochureId,
           storeId: data.storeId,
           country: data.country,
+          cityIds: data.cityIds || [data.cityId], // Support both old and new format
           crawledAt: data.crawledAt.toDate(),
-          startDate: data.startDate.toDate(),
-          endDate: data.endDate.toDate(),
           filename: data.filename,
           cloudStoragePath: data.cloudStoragePath,
           imageCount: data.imageCount,
@@ -139,6 +133,34 @@ export class FirebaseBrochureService {
     } catch (error) {
       console.error("Error getting brochures by store:", error);
       return [];
+    }
+  }
+
+  /**
+   * Update brochure record with partial data
+   */
+  async updateBrochureRecord(
+    brochureId: string,
+    updates: Partial<BrochureRecord>,
+  ): Promise<void> {
+    try {
+      const snapshot = await db
+        .collection(this.collection)
+        .where("brochureId", "==", brochureId)
+        .limit(1)
+        .get();
+
+      if (snapshot.empty) {
+        throw new Error(`No brochure record found for ID: ${brochureId}`);
+      }
+
+      const doc = snapshot.docs[0];
+      await doc.ref.update(updates);
+
+      console.log(`✅ Brochure record updated for ID: ${brochureId}`);
+    } catch (error) {
+      console.error("Error updating brochure record:", error);
+      throw error;
     }
   }
 

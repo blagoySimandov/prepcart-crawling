@@ -33,9 +33,9 @@ echo "🏗️  Project: ${PROJECT_ID}"
 echo "🐳 Image: ${IMAGE_NAME}"
 echo "⏰ Schedule: ${SCHEDULE}"
 
-# Check if crawler directory exists
-if [ ! -d "crawlers/${CRAWLER_NAME}" ]; then
-  echo "❌ Error: Crawler directory 'crawlers/${CRAWLER_NAME}' does not exist"
+# Check if katalozi subcrawler directory exists
+if [ ! -d "crawlers/katalozi/crawlers/${CRAWLER_NAME}" ]; then
+  echo "❌ Error: Katalozi subcrawler directory 'crawlers/katalozi/crawlers/${CRAWLER_NAME}' does not exist"
   exit 1
 fi
 
