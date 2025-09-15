@@ -207,8 +207,4 @@ To run the crawler:
   tsx ${crawlerFile}
 `);
 }
-
-if (require.main === module) {
-  main().catch(console.error);
-}
-
+main();
