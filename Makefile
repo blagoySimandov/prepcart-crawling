@@ -6,6 +6,8 @@ CRAWLER ?= kaufland
 REGION ?= europe-west1
 PROJECT_ID ?= $(shell gcloud config get-value project 2>/dev/null)
 SCHEDULE ?= 0 9 * * * # Default: Daily 9 AM UTC
+START_HOUR ?= 9 # Start hour for staggered deployment
+INTERVAL ?= 30 # Interval in minutes between crawlers
 
 # Colors for output
 CYAN = \033[36m
@@ -14,7 +16,7 @@ YELLOW = \033[33m
 RED = \033[31m
 NC = \033[0m # No Color
 
-.PHONY: help build run deploy deploy-all trigger logs list-crawlers clean
+.PHONY: help build run deploy deploy-all deploy-staggered trigger logs list-crawlers clean
 
 help: ##@ Display this help message
 	@echo ""
@@ -67,6 +69,14 @@ deploy-all: ## Deploy all crawlers with a default schedule
 		exit 1; \
 	fi
 	./scripts/deploy-all-crawlers.sh "$(SCHEDULE)" "$(REGION)" "$(PROJECT_ID)"
+
+deploy-staggered: ## Deploy all crawlers with staggered schedules (daily at different times)
+	@echo "$(CYAN)Deploying all crawlers with staggered schedules starting at $(START_HOUR):00 UTC with $(INTERVAL) minute intervals...$(NC)"
+	@if [ -z "$(PROJECT_ID)" ]; then \
+		echo "$(RED)Error: PROJECT_ID not set. Please set it via: export PROJECT_ID=your-project-id$(NC)"; \
+		exit 1; \
+	fi
+	./scripts/deploy-all-staggered.sh "$(START_HOUR)" "$(INTERVAL)" "$(REGION)" "$(PROJECT_ID)"
 
 trigger: ## Trigger crawler job manually on Cloud Run
 	@echo "$(CYAN)Triggering job for crawler: $(CRAWLER)$(NC)"
