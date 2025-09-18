@@ -20,7 +20,7 @@ interface Promotion {
   id: string;
   title: string;
   type: string;
-  price?: number;
+  newPrice?: number;
   isPrime: boolean;
 }
 
@@ -92,7 +92,9 @@ interface RawProductTile {
  * @param rawProducts Array of raw product tile objects
  * @returns Array of cleaned product objects
  */
-export function extractProductData(rawProducts: RawProductTile[]): CleanProduct[] {
+export function extractProductData(
+  rawProducts: RawProductTile[],
+): CleanProduct[] {
   return rawProducts
     .filter((item) => item.type === "PRODUCT_TILE" && item.data)
     .map((item) => {
@@ -111,7 +113,7 @@ export function extractProductData(rawProducts: RawProductTile[]): CleanProduct[
           id: data.promotion.promoId || String(data.promotion.promotionId),
           title: data.promotion.title || "",
           type: data.promotion.type || "",
-          price: data.promotion.price,
+          newPrice: data.promotion.price,
           isPrime: data.promotion.isPrime || false,
         });
       }
@@ -123,12 +125,15 @@ export function extractProductData(rawProducts: RawProductTile[]): CleanProduct[
             id: promo.promoId || String(promo.promotionId),
             title: promo.title || "",
             type: promo.type || "",
-            price: promo.price,
+            newPrice: promo.price,
             isPrime: promo.isPrime || false,
           });
         });
       }
-      const dedupedPromotions = rawPromotions.filter((item, index, self) => index === self.findIndex((t) => t.id === item.id));
+      const dedupedPromotions = rawPromotions.filter(
+        (item, index, self) =>
+          index === self.findIndex((t) => t.id === item.id),
+      );
 
       const cleanProduct: CleanProduct = {
         id: data.id || "",
