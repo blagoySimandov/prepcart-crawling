@@ -5,7 +5,7 @@
 CRAWLER ?= kaufland
 REGION ?= europe-west1
 PROJECT_ID ?= $(shell gcloud config get-value project 2>/dev/null)
-SCHEDULE ?= 0 9 * * * # Default: Daily 9 AM UTC
+SCHEDULE ?= 0 15 * * * # Default: Daily 9 AM UTC
 START_HOUR ?= 9 # Start hour for staggered deployment
 INTERVAL ?= 30 # Interval in minutes between crawlers
 
