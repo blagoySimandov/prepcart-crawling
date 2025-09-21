@@ -28,9 +28,11 @@ export class WebshareProxyService {
     this.apiToken = apiToken;
   }
 
-  async getBulgarianProxies(mode: "direct" | "backbone" = "direct"): Promise<WebshareProxy[]> {
+  async getBulgarianProxies(
+    mode: "direct" | "backbone" = "direct",
+  ): Promise<WebshareProxy[]> {
     const url = `${this.baseUrl}/proxy/list/?mode=${mode}&country_code__in=BG&page_size=100`;
-    
+
     try {
       const response = await fetch(url, {
         headers: {
@@ -40,17 +42,21 @@ export class WebshareProxyService {
       });
 
       if (!response.ok) {
-        throw new Error(`Webshare API error: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Webshare API error: ${response.status} ${response.statusText}`,
+        );
       }
 
-      const data = await response.json() as WebshareProxyListResponse;
-      
+      const data = (await response.json()) as WebshareProxyListResponse;
+
       // Filter for valid Bulgarian proxies only
-      const validProxies = data.results.filter(proxy => 
-        proxy.valid && proxy.country_code === "BG"
+      const validProxies = data.results.filter(
+        (proxy) => proxy.valid && proxy.country_code === "BG",
       );
 
-      console.log(`🇧🇬 Found ${validProxies.length} valid Bulgarian proxies from Webshare`);
+      console.log(
+        ` Found ${validProxies.length} valid Bulgarian proxies from Webshare`,
+      );
       return validProxies;
     } catch (error) {
       console.error("Failed to fetch Bulgarian proxies from Webshare:", error);
@@ -62,7 +68,7 @@ export class WebshareProxyService {
     if (proxies.length === 0) {
       return null;
     }
-    
+
     const randomIndex = Math.floor(Math.random() * proxies.length);
     return proxies[randomIndex];
   }

@@ -1,39 +1,21 @@
-import { parseNuxtData } from "parse-hydration-data";
-import axios from "axios";
-import { extractProductData } from "./clean-model.js";
 import { writeObjectToFile } from "../util.js";
+import { GlovoScraper } from "./scraper.js";
+import { GlovoFetcher } from "./fetcher.js";
 
-type ExtractedData = {
-  data: {
-    initialData: {
-      body: {
-        type: string;
-        data: {
-          elements: any[];
-        };
-      }[];
-    };
-  }[];
-  layout: string;
-};
-
-(async () => {
-  try {
-    const { data: html } = await axios.get("https://glovoapp.com/bg/en/varna/billa-var?content=top-sellers-ts");
-
-    const fullData: ExtractedData = parseNuxtData(html);
-    writeObjectToFile(fullData, "uncleaned.json");
-    for (const v of fullData.data) {
-      const bodyArr = v?.initialData?.body;
-      if (!bodyArr) continue;
-      for (const body of bodyArr) {
-        if (body?.type !== "GRID") continue;
-        const products = body?.data?.elements;
-        const cleanedProducts = extractProductData(products);
-        writeObjectToFile(cleanedProducts);
-      }
-    }
-  } catch (error) {
-    console.error("An error was found executing the glovo crawler", error);
+async function main() {
+  const webshareApiToken = process.env.WEBSHARE_API_TOKEN;
+  if (!webshareApiToken) {
+    throw new Error("WEBSHARE_API_TOKEN environment variable is required");
   }
-})();
+
+  const fetcher = new GlovoFetcher(webshareApiToken);
+  await fetcher.initialize();
+
+  const scraper = new GlovoScraper(fetcher);
+  const products = await scraper.scrapeDataViaContentUris();
+  writeObjectToFile(products, "products.json");
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main();
+}

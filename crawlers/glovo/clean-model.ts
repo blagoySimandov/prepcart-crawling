@@ -1,30 +1,6 @@
-interface CleanProduct {
-  id: string;
-  sku: string;
-  name: string;
-  description: string;
-  price: number;
-  currency: string;
-  priceDisplay: string;
-  imageUrl: string;
-  category: string;
-  categoryId?: string;
-  isSponsored: boolean;
-  isRestricted: boolean;
-  isWeighted: boolean;
-  saleType: string;
-  promotions: Promotion[];
-}
+import { ParsedProduct, Promotion } from "./types.js";
 
-interface Promotion {
-  id: string;
-  title: string;
-  type: string;
-  newPrice?: number;
-  isPrime: boolean;
-}
-
-interface RawProductTile {
+export interface RawProductTile {
   type: string;
   data: {
     id: string;
@@ -41,9 +17,9 @@ interface RawProductTile {
     };
     imageUrl?: string;
     imageId?: string;
-    images?: any[];
-    tags?: any[];
-    attributeGroups?: any[];
+    images?: unknown[];
+    tags?: unknown[];
+    attributeGroups?: unknown[];
     promotions?: Array<{
       productId: string;
       promotionId: number;
@@ -72,8 +48,8 @@ interface RawProductTile {
       isPrime: boolean;
       promoId: string;
     };
-    labels?: any[];
-    indicators?: any[];
+    labels?: unknown[];
+    indicators?: unknown[];
     sponsored?: boolean;
     restricted?: boolean;
     tracking?: {
@@ -94,7 +70,7 @@ interface RawProductTile {
  */
 export function extractProductData(
   rawProducts: RawProductTile[],
-): CleanProduct[] {
+): ParsedProduct[] {
   return rawProducts
     .filter((item) => item.type === "PRODUCT_TILE" && item.data)
     .map((item) => {
@@ -135,7 +111,7 @@ export function extractProductData(
           index === self.findIndex((t) => t.id === item.id),
       );
 
-      const cleanProduct: CleanProduct = {
+      const cleanProduct: ParsedProduct = {
         id: data.id || "",
         sku: data.externalId || "",
         name: cleanName,

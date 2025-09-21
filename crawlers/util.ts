@@ -1,6 +1,9 @@
 import * as fs from "fs";
 
-export function writeObjectToFile(products: object, filename: string = "product_data.json") {
+export function writeObjectToFile(
+  products: object,
+  filename: string = "product_data.json",
+) {
   fs.writeFileSync(
     filename,
     JSON.stringify(
