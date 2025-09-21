@@ -8,17 +8,22 @@ import { extractNavigationUris } from "./navigation-link-extractor";
 export interface GlovoScraperConfig {
   minDelay?: number;
   maxDelay?: number;
+  concurrency?: number;
 }
 
 export class GlovoScraper {
+  static readonly DEFAULT_CONCURRENCY = 3;
+
   private fetcher: GlovoFetcher;
   private minDelay: number;
   private maxDelay: number;
+  private concurrency: number;
 
   constructor(fetcher: GlovoFetcher, config: GlovoScraperConfig = {}) {
     this.fetcher = fetcher;
     this.minDelay = config.minDelay ?? 200;
     this.maxDelay = config.maxDelay ?? 500;
+    this.concurrency = config.concurrency ?? GlovoScraper.DEFAULT_CONCURRENCY;
   }
 
   async scrapeDataViaContentUris(): Promise<ParsedProduct[]> {
@@ -27,18 +32,39 @@ export class GlovoScraper {
     const navigationLinks = extractNavigationUris(response);
     writeObjectToFile(navigationLinks, "navigation-links.json");
 
-    for (const link of navigationLinks) {
-      console.log("VISITING NAVIGATION URI: ", link.uri);
+    const processLink = async (link: { uri: string }) => {
       await randomDelay(this.minDelay, this.maxDelay);
       const response = await this.fetcher.requestContentUri(
         link.uri,
         CITY_CODE,
       );
       const body = response.data.data.body;
-      writeObjectToFile(body, "from-navigation.json");
-      parseBodyElements(body, [], products);
-    }
+      const linkProducts: ParsedProduct[] = [];
+      parseBodyElements(body, [], linkProducts);
+      return linkProducts;
+    };
+
+    const results = await this.processConcurrently(
+      navigationLinks,
+      processLink,
+    );
+    results.forEach((linkProducts) => products.push(...linkProducts));
 
     return products;
+  }
+
+  private async processConcurrently<T, R>(
+    items: T[],
+    processor: (item: T) => Promise<R>,
+  ): Promise<R[]> {
+    const results: R[] = [];
+
+    for (let i = 0; i < items.length; i += this.concurrency) {
+      const batch = items.slice(i, i + this.concurrency);
+      const batchResults = await Promise.all(batch.map(processor));
+      results.push(...batchResults);
+    }
+
+    return results;
   }
 }
