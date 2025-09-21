@@ -1,12 +1,12 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { parseNuxtData } from "parse-hydration-data";
 import { ExtractedData } from "./types.js";
-import { randomDelay } from "./delay-util.js";
 import {
   WebshareProxyService,
   WebshareProxy,
 } from "../webshare-proxy-service.js";
 import { HttpsProxyAgent } from "https-proxy-agent";
+import { randomDelay } from "../util.js";
 
 export class GlovoFetcher {
   private proxyService: WebshareProxyService;

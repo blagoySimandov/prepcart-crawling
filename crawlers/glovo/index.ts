@@ -1,6 +1,6 @@
-import { writeObjectToFile } from "../util.js";
-import { GlovoScraper } from "./scraper.js";
-import { GlovoFetcher } from "./fetcher.js";
+import { writeObjectToFile } from "../util";
+import { GlovoScraper } from "./scraper";
+import { GlovoFetcher } from "./fetcher";
 
 async function main() {
   const webshareApiToken = process.env.WEBSHARE_API_TOKEN;

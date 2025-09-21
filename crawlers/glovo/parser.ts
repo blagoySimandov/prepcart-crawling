@@ -1,6 +1,6 @@
-import { extractProductData, RawProductTile } from "./clean-model.js";
-import { BodyRaw, ParsedProduct } from "./types.js";
-import { BODY_TYPES } from "./constants.js";
+import { extractProductData, RawProductTile } from "./clean-model";
+import { BodyRaw, ParsedProduct } from "./types";
+import { BODY_TYPES } from "./constants";
 
 export function parseBodyElements(
   bodyArr: BodyRaw[],

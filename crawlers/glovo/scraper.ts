@@ -1,10 +1,9 @@
-import { CITY_CODE, DEFAULT_GLOVO_URL } from "./constants.js";
-import { GlovoFetcher } from "./fetcher.js";
-import { parseBodyElements } from "./parser.js";
-import { extractNavigationUris } from "./navigation-links-extractor.js";
-import { randomDelay } from "./delay-util.js";
-import { ParsedProduct } from "./types.js";
-import { writeObjectToFile } from "../util.js";
+import { CITY_CODE, DEFAULT_GLOVO_URL } from "./constants";
+import { GlovoFetcher } from "./fetcher";
+import { parseBodyElements } from "./parser";
+import { ParsedProduct } from "./types";
+import { randomDelay, writeObjectToFile } from "../util";
+import { extractNavigationUris } from "./navigation-link-extractor";
 
 export interface GlovoScraperConfig {
   minDelay?: number;
@@ -23,7 +22,7 @@ export class GlovoScraper {
   }
 
   async scrapeDataViaContentUris(): Promise<ParsedProduct[]> {
-    const response = await this.fetcher.fetchAndParseHtml(DEFAULT_GLOVO_URL); //Go to some page to get the navigation links from the sidebar
+    const response = await this.fetcher.fetchAndParseHtml(DEFAULT_GLOVO_URL);
     const products: ParsedProduct[] = [];
     const navigationLinks = extractNavigationUris(response);
     writeObjectToFile(navigationLinks, "navigation-links.json");
