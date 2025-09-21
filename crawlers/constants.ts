@@ -6,6 +6,7 @@ export const STOREID_TO_COUNTRY: Record<string, string> = {
   "lidl-bg": "bulgaria",
   lidl: "bulgaria",
   billa: "bulgaria",
+  "bila-bg": "bulgaria",
   "burleks-bg": "bulgaria",
   "cba-bg": "bulgaria",
 };

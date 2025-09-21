@@ -1,0 +1,21 @@
+import { writeObjectToFile } from "../util";
+import { GlovoScraper } from "./scraper";
+import { GlovoFetcher } from "./fetcher";
+
+async function main() {
+  const webshareApiToken = process.env.WEBSHARE_API_TOKEN;
+  if (!webshareApiToken) {
+    throw new Error("WEBSHARE_API_TOKEN environment variable is required");
+  }
+
+  const fetcher = new GlovoFetcher(webshareApiToken);
+  await fetcher.initialize();
+
+  const scraper = new GlovoScraper(fetcher);
+  const products = await scraper.scrapeDataViaContentUris();
+  writeObjectToFile(products, "products.json");
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main();
+}
