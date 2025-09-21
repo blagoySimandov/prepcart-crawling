@@ -1,7 +1,7 @@
 export const CITY_CODE = "VAR";
 
 export const DEFAULT_GLOVO_URL =
-  "https://glovoapp.com/bg/en/varna/billa-var?content=napitki-sc.12161133%2Fvoda-c.12161087";
+  "https://glovoapp.com/bg/bg/sofiya/billa-sof1/";
 
 export const BODY_TYPES = {
   GRID: "GRID",

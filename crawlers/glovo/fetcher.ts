@@ -12,6 +12,7 @@ export class GlovoFetcher {
   private proxyService: WebshareProxyService;
   private bulgarianProxies: WebshareProxy[] = [];
   private currentProxyIndex = 0;
+  private requestedUris = new Map<string, boolean>();
 
   constructor(webshareApiToken: string) {
     this.proxyService = new WebshareProxyService(webshareApiToken);
@@ -54,10 +55,21 @@ export class GlovoFetcher {
     cityCode: string,
     countryCode: string = "BG",
   ) {
+    if (this.requestedUris.has(contentUri)) {
+      return null;
+    }
+
+    this.requestedUris.set(contentUri, true);
     await randomDelay(800, 2000);
     const requestUri = "https://api.glovoapp.com" + contentUri;
     const proxy = this.getNextProxy();
     const proxyConfig = this.getProxyConfig(proxy);
+    console.log(
+      "VISITING URI: ",
+      contentUri,
+      "WITH PROXT",
+      proxy.proxy_address,
+    );
 
     return axios.get(requestUri, {
       ...proxyConfig,

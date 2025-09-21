@@ -12,7 +12,7 @@ export interface GlovoScraperConfig {
 }
 
 export class GlovoScraper {
-  static readonly DEFAULT_CONCURRENCY = 3;
+  static readonly DEFAULT_CONCURRENCY = 10;
 
   private fetcher: GlovoFetcher;
   private minDelay: number;
@@ -33,14 +33,8 @@ export class GlovoScraper {
     writeObjectToFile(navigationLinks, "navigation-links.json");
 
     const processLink = async (link: { uri: string }) => {
-      await randomDelay(this.minDelay, this.maxDelay);
-      const response = await this.fetcher.requestContentUri(
-        link.uri,
-        CITY_CODE,
-      );
-      const body = response.data.data.body;
       const linkProducts: ParsedProduct[] = [];
-      parseBodyElements(body, [], linkProducts);
+      await this.processContentUri(link.uri, linkProducts);
       return linkProducts;
     };
 
@@ -51,6 +45,29 @@ export class GlovoScraper {
     results.forEach((linkProducts) => products.push(...linkProducts));
 
     return products;
+  }
+
+  private async processContentUri(
+    contentUri: string,
+    products: ParsedProduct[],
+  ): Promise<void> {
+    await randomDelay(this.minDelay, this.maxDelay);
+    const response = await this.fetcher.requestContentUri(
+      contentUri,
+      CITY_CODE,
+    );
+
+    if (!response) return;
+
+    const body = response.data.data.body;
+    const nestedContentUris: string[] = [];
+
+    parseBodyElements(body, nestedContentUris, products);
+    console.log(`Found ${nestedContentUris.length} nested content uris`);
+
+    for (const nestedUri of nestedContentUris) {
+      await this.processContentUri(nestedUri, products);
+    }
   }
 
   private async processConcurrently<T, R>(
