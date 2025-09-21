@@ -1,4 +1,4 @@
-import { ParsedProduct, Promotion, RawProductTile, RawPromotion } from "./types";
+import { ParsedProduct, Promotion, RawProductTile } from "./types";
 
 /**
  * Extracts and cleans product data from raw product tiles

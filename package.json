@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "vitest",
+    "typecheck": "tsc --noEmit",
     "start:katalozi": "tsx crawlers/katalozi/index.ts",
     "start:glovo": "tsx crawlers/glovo/index.ts",
     "start:nedostavka": "tsx crawlers/nedostavka/index.ts",
